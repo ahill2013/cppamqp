@@ -53,8 +53,38 @@ struct StatusPublish {
 
 // Mutexes to protect global data
 static std::string pathName = "/home/ubuntu/visiontest/";
+
 static uint64_t numFrames = 0;
-static double cameraAngle = 45.0;
+static double cameraAngle = 50.0 * M_PI / 180.0;      // Angle camera starts at
+//static double cameraViewingAngle = 60 * M_PI / 180.0; // Angle ground to sky captured
+//static double cameraHeight = 172.72; // Camera Height in centimeters
+//static double yOffset = 10;
+static double TENCENTIMETER = 100;
+
+double distance(double x1, double y1, double x2, double y2) {
+    return std::sqrt(pow(x2 - x1, 2.0) + pow(y2 - y1, 2.0));
+}
+
+//
+double xDist(double x , double depth) {
+/**
+	double val1 = depth*1.244;
+	printf("val1 = %f \n",val1);
+	double val2 = x - 640.0;
+	printf("val2 = %f \n", val2);
+	double val3 = val2/640.0;
+	printf("val3 = %f \n", val3);
+	double final = val1*val3/TENCENTIMETER;
+	printf("final = %f \n", final); 
+	return final;
+*/
+	return depth * 1.244 * ((x-640.0)/640.0) / TENCENTIMETER;
+}
+
+double yDist(double y, double depth) {
+//	double angle = cameraAngle - (35.0 * (360.0 - y) /  360.0) * M_PI / 180.0;
+	return depth * sin(cameraAngle) / TENCENTIMETER;
+}
 
 struct Data {
     bool running = true;
@@ -125,8 +155,7 @@ double getInterval() {
 struct ev_loop* sub_loop = ev_loop_new();
 std::mutex start;
 
-//#define TEST
-
+#define TEST
 
 #ifdef TEST
 //cv::VideoCapture capture("/home/ubuntu/45_into_sun_polar.mp4");
@@ -162,12 +191,15 @@ int32_t RecordFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& recFrame, cv::gpu::GpuMat& d
         switch(imageView.data_type)
         {
             case sl::zed::DATA_TYPE::UCHAR:
+                // cvType = CV_MAKE_TYPE(CV_8U, depth.channels);
                 cvType = CV_MAKE_TYPE(CV_8U, depthView.channels);
                 break;
             case sl::zed::DATA_TYPE::FLOAT:
+                // cvType = CV_MAKE_TYPE(CV_32F, 3);
                 cvType = CV_MAKE_TYPE(CV_32F, 3);
                 break;
             default:
+                //printf("Invalid Depth data type %d\n", depth.data_type);
                 printf("Invalid Depth data type %d\n", depthView.data_type);
         }
 
@@ -420,13 +452,19 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
         cv::gpu::Canny(afterGaus, cvEdges, 30, 90);
     }
 
+
+#ifdef TEST
+    cvEdges.download(dl);
+    cv::imwrite(pathName + "edges_" + std::to_string(numFrames) + ".jpg", dl);
+#endif
+
     cv::Mat cdst(rows, cols, CV_8UC3);
     cv::gpu::GpuMat houghOut;
 
     cv::gpu::HoughLinesBuf hough_buffer;
 
     //printf("rows = %d cols = %d\n", image.rows, image.cols);
-    cv::gpu::HoughLinesP(cvEdges, houghOut, hough_buffer, 1, CV_PI/180, 25, 50, 70);
+    cv::gpu::HoughLinesP(cvEdges, houghOut, hough_buffer, 1, CV_PI/180, 25, 50, 150);
 
     cv::vector<cv::Vec4i> houghLines;
     cv::vector<cv::Vec4i> combLines;
@@ -438,6 +476,7 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     houghOut.download(houghDl);
 
 #ifdef TEST
+//    cv::imwrite(pathName + "hough_" + std::to_string(numFrames) + ".jpg", dl);
     printf("lines = %d\n", houghLines.size());
 #endif 
 
@@ -450,8 +489,9 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     }*/
 
     outLines = houghLines;
+
 /* TEST CODE, REMOVE BEFORE USE */
-/*
+
     for(uint32_t i = 0; i < combLines.size(); i++)
     {
         cv::Vec4i l = combLines[i];
@@ -461,9 +501,10 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
 
     }
 
-    cv::imshow("test", cdst);
-    cv::waitKey(1);
-*/
+    cv::imwrite(pathName + "test_" + std::to_string(numFrames) + ".jpg", cdst);
+ //   cv::imshow("test", cdst);
+ //   cv::waitKey(1);
+
 /* TEST CODE */
 
 }
@@ -477,6 +518,18 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
  * TODO: Periodically send a status update to the Control unit
  * @param host string name of the host with the ip:port number as necessary
  */
+
+// Cast unsigned int to int to prevent type errors when subtracting
+int toSigned(unsigned x)
+{
+    if (x <= INT_MAX)
+        return static_cast<int>(x);
+
+    if (x >= INT_MIN)
+        return static_cast<int>(x - INT_MIN) + INT_MIN;
+
+    throw x; // Or whatever else you like
+}
 
 void vis_publisher(ZEDCtxt* ctxt) {
     std::string exchange = exchKeys.gps_exchange;
@@ -501,13 +554,10 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
         //sl::zed::Mat depthMat;
         cv::gpu::GpuMat gpuFrame;
+//        sl::zed::Mat depth;
         cv::gpu::GpuMat depthMat;
         cv::Mat dlDepth;
         cv::vector<cv::Vec4i> lines;
-
-        uint32_t cols = gpuFrame.cols;
-        uint32_t rows = gpuFrame.rows;
-        uint32_t halfCols = gpuFrame.cols/2;
 
         double theta1 = 0.0;
         double endTheta1 = 0.0;
@@ -518,6 +568,11 @@ void vis_publisher(ZEDCtxt* ctxt) {
             std::cout << "Failed to record " << _iterations << std::endl;
             continue;
         }
+
+        int cols = toSigned(gpuFrame.cols);
+        int rows = toSigned(gpuFrame.rows);
+        int halfCols = gpuFrame.cols/2;
+
         // TODO: populate lat/lon/time
         Lines* obstLines = new Lines(0, 0, 0);
 
@@ -526,14 +581,20 @@ void vis_publisher(ZEDCtxt* ctxt) {
 #ifdef TEST
         cv::Mat outMat(rows,cols, CV_8UC3);
         outMat.setTo(cv::Scalar(0,0,0));
-#endif
 
+        std::ofstream output;
+        output.open(pathName + "lines_" + std::to_string(numFrames) + ".txt");
+#endif
         for(uint32_t i = 0; i < lines.size(); i++)
         {
+            printf("Rows %d, Cols %d, HalfCols %d\n", rows, cols, halfCols);
             cv::Vec4i l = lines[i];
             Line* obLine = new Line();
 
             cv::Vec4i clean;
+
+	    std::cout << l  << std::endl;
+
             uint32_t realX = 0;
             uint32_t realY = 0;
 
@@ -542,47 +603,95 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
             //printf("line %d\n", i);
 
-            if(l[0] > halfCols)
-            {
-                clean[0] = (l[0]-halfCols)-20;
-                clean[2] = (l[2]-halfCols)-20;
-            }
+            //if(l[0] > halfCols || l[2] > halfCols)
+            //{
+	//	continue;
+                //clean[0] = (l[0]-halfCols)-20;
+                //clean[2] = (l[2]-halfCols)-20;
+          //  } else {
+		clean[0] = l[0];
+		clean[2] = l[2];
+	    //}
 
             clean[1] = l[1];
             clean[3] = l[3];
 
-#ifdef TEST
+/*           if (clean[0] < 10 || clean[0] > 1270) {
+		continue;
+	   } else if (clean[3] < 10 || clean[3] > 1270) {
+		continue;
+	   }
+*/
+//#ifdef TEST
             printf("clean 0 = %d   1 = %d    2 = %d   3 = %d\n", clean[0], clean[1], clean[2], clean[3]);
+#ifdef TEST
             //cv::line(outMat, cv::Point(clean[0], clean[1]), cv::Point(clean[2], clean[3]), cv::Scalar(255,255,255), 3, CV_AA);
             cv::line(outMat, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255,255,255), 3, CV_AA);
 #endif 
-            theta1 = atan((rows-clean[1])/(clean[0]-halfCols));
-            endTheta1 = atan((rows-clean[3])/(clean[2]-halfCols));
+            theta1 = atan2((rows-clean[1]), (clean[0]-halfCols));
+            endTheta1 = atan2((rows-clean[3]), (clean[2]-halfCols));
+
+	   printf("Y1 %d, X1 %d\t\t Y2 %d, X2 %d\n", (rows - clean[1]), (clean[0] - halfCols), (rows - clean[3]), clean[2] - halfCols);
+	   printf("StartTheta %f\tEndTheta %f\n", theta1, endTheta1);
+
 
             // obLine.beginX = clean[0];
             // obLine.endX = clean[2];
 
-#ifndef TEST
-            cv::Vec3b p1 = dlDepth.at<cv::Vec3b>(l[0], l[1]);//depthMat.getValue(l[0], l[1]);
-            cv::Vec3b p2 = dlDepth.at<cv::Vec3b>(l[2], l[3]);//depthMat.getValue(l[2], l[3]);
+//#ifndef TEST
+
+           printf("Got pointer\n");
+           fflush(stdout);
+
+            float p1 = dlDepth.at<float>(l[0], l[1]);//depthMat.getValue(l[0], l[1]);
+            float p2 = dlDepth.at<float>(l[2], l[3]);//depthMat.getValue(l[2], l[3]);
+
+            // If the line is obviously too long throw it out as an error in the ZED's depth map
+            // 100 * 10cm = 10m mapping 10cm -> 1unit
+            if (p1 > 10000 || p2 > 10000) {
+                continue;
+            }
 
             // Need to update the y coordinate with the depth map
 
-            //printf("depth @ x %d  y  %d: %d %d %d", l[0], l[1], d.c1, d.c2, d.c3);
+//            printf("depth @ x %d  y  %d: %d %d %d\n", l[0], l[1], p1[0], p1[1], p1[2]);
 
             // depth map returns in millimeters we want 10cm increments so /100
-            beginActR = sin(cameraAngle) * (p1.val[0]/100);//.c1/100);
-            endActR = sin(cameraAngle) * (p2.val[0]/100);//.c1/100);
+            
+            //beginActR = std::sqrt(pow(p1.val[0], 2.0) + pow(p1.val[1], 2.0) + pow(p1.val[2], 2.0));//.c1/100);
+            //endActR = std::sqrt(pow(p2.val[0], 2.0) + pow(p2.val[1], 2.0) + pow(p2.val[2], 2.0));//.c1/100);
 
-            obLine->beginY = beginActR * sin(theta1);
-            obLine->endY = endActR * sin(endTheta1);
+            obLine->beginY = yDist(l[1], p1);
+            obLine->endY = yDist(l[3], p2);
 
-            obLine->beginX = beginActR * cos(theta1);
-            obLine->endX = endActR * cos(endTheta1);
-#endif
+            obLine->beginX = xDist(l[0], p1);
+            obLine->endX = xDist(l[2], p2);
+
+            printf("Actual X1:%f, Y1:%f, X2:%f, Y2%f\n\n", obLine->beginX, obLine->beginY, obLine->endX, obLine->endY);
+
+            // If the line is too short throw it away as we get a lot of short false positives
+            // 1 is the equivalent of 10cm (we are mapping 10cm -> 1unit for the sake of motion planning)
+            if (distance(obLine->beginX, obLine->beginY, obLine->endX, obLine->endY) < 1) {
+                continue;
+            }
+
+//	    printf("Actual X1:%f, Y1:%f, X2:%f, Y2%f\n\n", obLine->beginX, obLine->beginY, obLine->endX, obLine->endY);
+
+            #ifdef TEST
+		output << obLine->beginX << " " << obLine->beginY << " " << obLine->endX << " " << obLine->endY << std::endl;
+		output.flush();
+	    #endif
+//#endif
+            
 
             obstLines->addLine(obLine);
+
         }
+       	#ifdef TEST
+		output.close();
+	#endif
+
+
 
 #ifdef TEST
 
@@ -612,6 +721,7 @@ void vis_publisher(ZEDCtxt* ctxt) {
     std::string closing = "closing";
     close_message(connection, closing, exchange, key);
 }
+
 
 // Listen for incoming information like commands from Control or requests from other components
 void vis_subscriber(std::string host) {
