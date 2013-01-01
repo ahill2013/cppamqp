@@ -74,10 +74,10 @@ Lines::Lines(double lat, double lon, uint64_t time) {
     this->lat = lat;
     this->lon = lon;
     this->time = time;
-    lines = new std::vector<Line>();
+    lines = new std::vector<Line*>();
 }
 
-void Lines::addLine(Line& line) {
+void Lines::addLine(Line* line) {
     lines->push_back(line);
 }
 
@@ -97,13 +97,13 @@ void Lines::Serialize(Writer<StringBuffer> &writer) const {
     Value timeValue;
     timeValue.SetUint64(time);
 
-    for (Line& line : *lines) {
+    for (Line* line : *lines) {
         Value lineVal;
         lineVal.SetObject();
-        lineVal.AddMember("beginX", line.beginX, allocator);
-        lineVal.AddMember("beginY", line.beginY, allocator);
-        lineVal.AddMember("endX", line.endX, allocator);
-        lineVal.AddMember("endY", line.endY, allocator);
+        lineVal.AddMember("beginX", line->beginX, allocator);
+        lineVal.AddMember("beginY", line->beginY, allocator);
+        lineVal.AddMember("endX", line->endX, allocator);
+        lineVal.AddMember("endY", line->endY, allocator);
         linesArray.PushBack(lineVal, allocator);
     }
 
@@ -116,6 +116,10 @@ void Lines::Serialize(Writer<StringBuffer> &writer) const {
 }
 
 Lines::~Lines() {
+    for (Line* line: *lines)
+    {
+        delete line;
+    }
     delete lines;
 }
 

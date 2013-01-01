@@ -78,11 +78,11 @@ public:
     double lat;
     double lon;
     uint64_t time;
-    std::vector<Line>* lines;
+    std::vector<Line*>* lines;
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
-    void addLine(Line&);
+    void addLine(Line*);
 
     Lines(double lat, double lon, uint64_t time);
     ~Lines();
