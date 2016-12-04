@@ -16,6 +16,10 @@
 #include "mutex"
 #include "chrono"
 
+
+void setup_consumer(AMQP::TcpChannel* chan, std::string queue, std::string exchange, std::string key);
+void setup_exchange(AmqpClient::Channel::ptr_t conn, std::string exchange, std::string type);
+void setup_cop_exchange(AMQP::TcpChannel* chan, std::string exchange, std::string type);
 // Send a message to an exchange with a key
 void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::string header,
                   std::string exchange, std::string key, bool json);
@@ -39,14 +43,9 @@ struct MessageHeaders {
     std::string WGPSFRAME = u8"GPS";
     std::string WSTATUS = u8"STATUS";
     std::string WGETSTATUS = u8"GETSTATUS";
-};
 
-// Exchange key pair to bind to
-struct Pair {
-    std::string exchange;
-    std::string key;
-};
 
+};
 
 struct ExchKeys {
     std::string FANOUT = "fanout";
@@ -61,6 +60,10 @@ struct ExchKeys {
 
 
     std::string gps_sub = "gps_sub_queue";
+    std::string mc_sub = "mc_sub_queue";
+
+    std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC}};
+
 };
 
 

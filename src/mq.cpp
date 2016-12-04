@@ -6,6 +6,24 @@
 
 MessageHeaders messageHeaders;
 
+void setup_consumer(AMQP::TcpChannel* chan, std::string queue, std::string exchange, std::string key) {
+    chan->declareQueue(queue);  // Declare a queue
+    chan->bindQueue(exchange, queue, key);  // Bind a queue to an exchange so that it gets messages posted on exchange
+}
+
+void setup_exchange(AmqpClient::Channel::ptr_t conn, std::string exchange, std::string type) {
+    conn->DeclareExchange(exchange, type, false, false, false);
+}
+
+void setup_cop_exchange(AMQP::TcpChannel* chan, std::string exchange, std::string type) {
+
+    if (type == "fanout") {
+        chan->declareExchange(exchange, AMQP::fanout);  // Make sure exchange exists
+    } else if (type == "topic") {
+        chan->declareExchange(exchange, AMQP::topic);
+    }
+}
+
 void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
                        std::string exchange, std::string key, bool json) {
     AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
