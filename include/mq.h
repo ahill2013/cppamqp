@@ -25,11 +25,20 @@ void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
                   std::string exchange, std::string key, bool json);
 
 struct MessageHeaders {
+
+    // ASCII versions of headers
     std::string GENERICNAME = "MESSAGE";
     std::string CLOSE = "CLOSE";
     std::string GPSFRAME = "GPS";
     std::string STATUS = "STATUS";
     std::string GETSTATUS = "GETSTATUS";
+
+    // UNICODE versions of headers
+    std::string WGENERICNAME = u8"MESSAGE";
+    std::string WCLOSE = u8"CLOSE";
+    std::string WGPSFRAME = u8"GPS";
+    std::string WSTATUS = u8"STATUS";
+    std::string WGETSTATUS = u8"GETSTATUS";
 };
 
 // Exchange key pair to bind to

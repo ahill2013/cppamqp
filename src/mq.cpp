@@ -4,11 +4,13 @@
 
 #include "../include/mq.h"
 
+MessageHeaders messageHeaders;
+
 void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
                        std::string exchange, std::string key, bool json) {
     AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
 
-    std::map<std::string,AmqpClient::TableValue> header_table = {{"MESSAGE", AmqpClient::TableValue("CLOSE")}};
+    std::map<std::string,AmqpClient::TableValue> header_table = {{messageHeaders.WGENERICNAME, AmqpClient::TableValue(messageHeaders.WCLOSE)}};
     b_message->HeaderTable(header_table);
 
     conn->BasicPublish(exchange, key, b_message, false, false);
@@ -20,12 +22,10 @@ void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::str
     // Option 2 without headers I want
     AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
 
-    std::map<std::string,AmqpClient::TableValue> header_table = {{"MESSAGE",AmqpClient::TableValue("gps")}};
+    std::map<std::string,AmqpClient::TableValue> header_table = {{messageHeaders.WGENERICNAME, AmqpClient::TableValue(messageHeaders.WGPSFRAME)}};
     b_message->HeaderTable(header_table);
 
     conn->BasicPublish(exchange, key, b_message, false, false);
-
-
 }
 
 ///////////////////////////////////////////////////////////////////////////

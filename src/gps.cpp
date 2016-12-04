@@ -1,6 +1,7 @@
 #include "../include/mq.h"
 #include <stdio.h>
 
+MessageHeaders headers;
 // Mutexes to protect global data
 struct Mutexes {
     std::mutex m_num;
@@ -45,7 +46,6 @@ struct ev_loop* sub_loop = ev_loop_new();
  * @param host string name of the host with the ip:port number as necessary
  */
 void gps_publisher(std::string host) {
-    MessageHeaders headers;
     ExchKeys exchKeys;
 
     std::string exchange = exchKeys.gps_exchange;
@@ -60,7 +60,7 @@ void gps_publisher(std::string host) {
 
     while (_iterations < 10) {
 
-        send_message(connection, message, headers.GENERICNAME, exchange, key, false);
+        send_message(connection, message, headers.WGPSFRAME, exchange, key, false);
         std::cout << _iterations << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -73,7 +73,7 @@ void gps_publisher(std::string host) {
 
 // Listen for incoming information like commands from Control or requests from other components
 void gps_subscriber(std::string host) {
-    MessageHeaders headers;
+//    MessageHeaders headers;
     ExchKeys exchKeys;
 
     std::string queue = exchKeys.gps_sub;
@@ -93,7 +93,7 @@ void gps_subscriber(std::string host) {
     };
 
     // Handle commands. Every time a message arrives this is called
-    auto messageCb = [chan](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
+    auto messageCb = [chan, headers](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
         std::cout << "Message Delivered" << std::endl;
 
         delivered++;
@@ -105,15 +105,14 @@ void gps_subscriber(std::string host) {
 //        std::cout << message.headers().get("MESSAGE") << std::endl;
         std::string header = message.headers().get("MESSAGE");
 
-//        std::cout << header << std::endl;
+        std::cout << header.c_str() << std::endl;
 //        std::cout << delivered << std::endl;
         std::cout << getMessage() << std::endl;
         setMessage();
 
-//        if (header == headers.CLOSE) {
-//            delete subscriber;
-//            exit(0);
-//        }
+        if (header == headers.WCLOSE) {
+            std::cout << "Supposed to close" << std::endl;
+        }
     };
 
     // Must do this for each set of exchanges and queues that are being listened to
