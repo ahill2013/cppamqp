@@ -1,3 +1,4 @@
+TEST= src/tcptest.o mq.o
 GOBJ= src/gps.o mq.o
 GOBJS= src/gps2.o mq.o
 POBJ= src/pub.o mq.o
@@ -7,9 +8,12 @@ JTEST= jsontest.o mq.o
 CC=g++
 DEBUG=-g -O0
 CXXFLAGS=-Wall $(DEBUG) -std=c++11
-LDLIBS= -lamqpcpp -lev -lpthread
+LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq
 
-all: gps gpss
+all: test
+
+test: $(TEST)
+	$(CC) $(CXXFLAGS) $(TEST) -o bin/test $(LDLIBS)
 
 pub: $(POBJ)
 	$(CC) $(CXXFLAGS) $(POBJ) -o bin/pub $(LDLIBS)
@@ -36,4 +40,4 @@ mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp $(LDLIBS)
 
 clean:
-	rm -f src/*.o *.o pub gps
+	rm -f src/*.o *.o bin/pub bin/gps

@@ -25,7 +25,7 @@ struct ev_loop* loop1 = ev_loop_new();
 struct ev_loop* loop2 = ev_loop_new();
 
 std::mutex m;
-//std::mutex lock;
+std::mutex lock;
 
 // All actual computations and publishes concerning GPS should happen here
 // Write a loop to publish all GPS informaiton every tenth of a second with a timestamp
@@ -78,8 +78,8 @@ void gps_subscriber(std::string host) {
     ExchKeys exchKeys;
 
     std::string queue = "gps_sub_queue";
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.gps_key;
+    std::string exchange = exchKeys.gps_exchange_two;
+    std::string key = exchKeys.gps_key_two;
 
     MQSub* subscriber = new MQSub(*loop2, host, queue, exchange, key);
     AMQP::TcpChannel* chan = subscriber->getChannel();
@@ -114,10 +114,10 @@ void gps_subscriber(std::string host) {
 
 int main() {
     std::string host = "amqp://localhost/";
-//    std::thread pub(gps_publisher, host);
+    std::thread pub(gps_publisher, host);
     std::thread sub(gps_subscriber, host);
 
     sub.join();
-//    pub.join();
+    pub.join();
 
 }

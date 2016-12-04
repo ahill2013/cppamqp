@@ -4,56 +4,28 @@
 
 #include "../include/mq.h"
 
+void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
+                       std::string exchange, std::string key, bool json) {
+    AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
 
-MQPub::MQPub(struct ev_loop& loop, std::string& host, std::string& queue, std::string& exchange, std::string& routingKey) { // : handler(&loop) {
-    handler = new AMQP::LibEvHandler(&loop);
-    conn = new AMQP::TcpConnection(handler, AMQP::Address(host));
-    chan = new AMQP::TcpChannel(conn);
-    _host = host;
-    _queue = queue;
-    _exchange = exchange;
-    _routingKey = routingKey;
+    std::map<std::string,AmqpClient::TableValue> header_table = {{"MESSAGE", AmqpClient::TableValue("CLOSE")}};
+    b_message->HeaderTable(header_table);
+
+    conn->BasicPublish(exchange, key, b_message, false, false);
 }
 
-MQPub::~MQPub() {
-    // Delete parameter fields then delete channel and consumer
-//    delete _host;
-//    delete _queue;
-//    delete _exchange;
-//    delete _routingKey;
+void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::string header,
+                  std::string exchange, std::string key, bool json) {
 
-    chan->close();
-    conn->close();
-    delete chan;
-    delete conn;
-    delete handler;
-}
+    // Option 2 without headers I want
+    AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
 
-AMQP::TcpChannel* MQPub::getChannel() {
-    return this->chan;
-}
+    std::map<std::string,AmqpClient::TableValue> header_table = {{"MESSAGE",AmqpClient::TableValue("gps")}};
+    b_message->HeaderTable(header_table);
 
-AMQP::TcpConnection* MQPub::getConnection() {
-    return this->conn;
-}
+    conn->BasicPublish(exchange, key, b_message, false, false);
 
-std::string MQPub::getQueue() {
-    return _queue;
-}
 
-std::string MQPub::getExchange() {
-    return _exchange;
-}
-
-std::string MQPub::getKey() {
-    return _routingKey;
-}
-
-bool MQPub::publish() {
-
-// publish a number of messages
-    chan->publish(getExchange(), getKey(), "my first message");
-    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////
