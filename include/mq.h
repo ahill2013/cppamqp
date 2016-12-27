@@ -108,8 +108,8 @@ using namespace rapidjson;
 
 class GPSMessage {
 public:
-    float lat;
-    float lon;
+    double lat;
+    double lon;
     double linvel;
     double linacc;
     double angvel;

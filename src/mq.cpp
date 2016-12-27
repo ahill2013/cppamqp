@@ -3,6 +3,7 @@
 //
 
 #include "../include/mq.h"
+
 using namespace rapidjson;
 
 MessageHeaders messageHeaders;
@@ -138,17 +139,19 @@ GPSMessage::GPSMessage(Document &d, bool preprocessed) {
         Value& _time = d["time"];
 
 
-        lat = _lat.GetFloat();
-        lon = _lon.GetFloat();
+        lat = _lat.GetDouble();
+        lon = _lon.GetDouble();
         time = _time.GetString();
     } else {
-        lat = GetValueByPointer(d, "/data/lat")->GetFloat();
+        lat = GetValueByPointer(d, "/data/lat")->GetDouble();
 
         std::cout << lat << std::endl;
-        lon = GetValueByPointer(d, "/data/lon")->GetFloat();
+        lon = GetValueByPointer(d, "/data/lon")->GetDouble();
 
         std::cout << lon << std::endl;
-        time = GetValueByPointer(d, "/time")->GetString();
+        time = d["time"].GetString();
+
+        std::cout << time << std::endl;
     }
 
 }

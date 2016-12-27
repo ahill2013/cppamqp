@@ -3,6 +3,7 @@
 //
 
 #include "../include/mq.h"
+#include <stdio.h>
 
 int main() {
     std::string message ="{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
@@ -27,11 +28,18 @@ int main() {
     Processor* processor = new Processor();
 
     std::cout << "Here" << std::endl;
+    std::cout.precision(21);
 
     GPSMessage* gpsMessage = processor->decode_gps(message, false);
+    printf("%.10f\n", gpsMessage->lat);
+    std::cout << gpsMessage->lon << std::endl;
+    std::cout << gpsMessage->time << std::endl;
+
 
 
     std::string encoded = processor->encode_gps(*gpsMessage);
+
+    std::cout << "Here" << std::endl;
 
     GPSMessage* gpsMessage1 = processor->decode_gps(encoded, true);
 
