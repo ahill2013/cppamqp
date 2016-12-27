@@ -31,3 +31,4 @@ SimpleAmqpClient:
             cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
             sudo cmake --build . --target install
 
+    Run sudo ldconfig 
