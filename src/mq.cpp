@@ -3,6 +3,7 @@
 //
 
 #include "../include/mq.h"
+using namespace rapidjson;
 
 MessageHeaders messageHeaders;
 
@@ -116,4 +117,55 @@ void MQSub::consume() {
 
 //    std::cout << channel->connected() << std::endl;
     channel->consume(getQueue()).onReceived(messageCb).onSuccess(startCb).onError(errorCb);
+}
+
+void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
+    writer.StartObject();
+    writer.Key("lat");
+    writer.Double(lat);
+
+    writer.Key("lon");
+    writer.Double(lon);
+
+    writer.Key("time");
+    writer.String(time.c_str());
+}
+
+GPSMessage::GPSMessage(Document &d, bool preprocessed) {
+    if (preprocessed) {
+        Value& _lon = d["lon"];
+        Value& _lat = d["lat"];
+        Value& _time = d["time"];
+
+
+        lat = _lat.GetFloat();
+        lon = _lon.GetFloat();
+        time = _time.GetString();
+    } else {
+        lat = GetValueByPointer(d, "/data/lat")->GetFloat();
+
+        std::cout << lat << std::endl;
+        lon = GetValueByPointer(d, "/data/lon")->GetFloat();
+
+        std::cout << lon << std::endl;
+        time = GetValueByPointer(d, "/time")->GetString();
+    }
+
+}
+
+GPSMessage::~GPSMessage() = default;
+
+
+std::string Processor::encode_gps(GPSMessage& to_encode) {
+    StringBuffer buffer;
+    Writer<StringBuffer> writer(buffer);
+
+    to_encode.Serialize(writer);
+    return buffer.GetString();
+}
+
+GPSMessage* Processor::decode_gps(std::string to_decode, bool preprocessed) {
+    Document d;
+    d.Parse(to_decode.c_str());
+    return new GPSMessage(d, preprocessed);
 }

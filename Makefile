@@ -1,4 +1,4 @@
-TEST= src/tcptest.o mq.o
+TEST=src/proctest.o mq.o
 GOBJ= src/gps.o mq.o
 GOBJS= src/gps2.o mq.o
 JTEST= jsontest.o mq.o

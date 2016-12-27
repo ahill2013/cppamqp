@@ -12,10 +12,10 @@
 #include "../lib/rapidjson/document.h"
 #include "../lib/rapidjson/writer.h"
 #include "../lib/rapidjson/stringbuffer.h"
+#include "../lib/rapidjson/pointer.h"
 #include "thread"
 #include "mutex"
 #include "chrono"
-
 
 void setup_consumer(AMQP::TcpChannel* chan, std::string queue, std::string exchange, std::string key);
 void setup_exchange(AmqpClient::Channel::ptr_t conn, std::string exchange, std::string type);
@@ -58,9 +58,19 @@ struct ExchKeys {
     std::string mc_exchange = "MC";
     std::string mc_key = "mc_key";
 
+    std::string vision_exchange = "VISION";
+    std::string vision_key = "vision_key";
+
+    std::string control_exchange = "CONTROL";
+    std::string control_key = "control_key";
+
+    std::string nav_exchange = "NAV";
+    std::string nav_key = "nav_key";
+
 
     std::string gps_sub = "gps_sub_queue";
     std::string mc_sub = "mc_sub_queue";
+    std::string vision_sub = "vision_sub_queue";
 
     std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC}};
 
@@ -92,5 +102,34 @@ private:
     std::string _routingKey;
 
 };
+
+
+using namespace rapidjson;
+
+class GPSMessage {
+public:
+    float lat;
+    float lon;
+    double linvel;
+    double linacc;
+    double angvel;
+    double angacc;
+    std::string time;
+
+    void Serialize(Writer<StringBuffer>& writer) const;
+
+    GPSMessage(Document& d, bool);
+    ~GPSMessage();
+};
+// Put all message types (as structs) in here, include ways to send and parse them)
+class Processor {
+public:
+    // Repeat one of these per message
+    std::string encode_gps(GPSMessage& to_encode);
+    GPSMessage* decode_gps(std::string to_decode, bool);
+private:
+    Document reader;
+};
+
 
 #endif //AMQPTRIAL_MQ_H

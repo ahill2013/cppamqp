@@ -62,24 +62,26 @@ void gps_publisher(std::string host) {
 
     int _iterations = 0;
 
-    std::string message = "my_message";
 
+    // Turn this into a while(true) loop to keep posting messages
     while (_iterations < 10) {
 
+        std::string message = "my_message";
         send_message(connection, message, headers.WGPSFRAME, exchange, key, false);
         std::cout << _iterations << std::endl;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
         setMessage();
         _iterations++;
     }
 
-    close_message(connection, message, exchange, key, false);
+    std::string closing = "closing";
+    close_message(connection, closing, exchange, key, false);
 }
 
 // Listen for incoming information like commands from Control or requests from other components
 void gps_subscriber(std::string host) {
-
+    MessageHeaders headers1;
 
     std::string queue = exchKeys.gps_sub;
     std::string exchange = exchKeys.gps_exchange;
@@ -103,7 +105,7 @@ void gps_subscriber(std::string host) {
     };
 
     // Handle commands. Every time a message arrives this is called
-    auto messageCb = [chan, headers](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
+    auto messageCb = [chan, headers1](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
         std::cout << "Message Delivered" << std::endl;
 
         delivered++;
@@ -116,7 +118,7 @@ void gps_subscriber(std::string host) {
         std::cout << getMessage() << std::endl;
         setMessage();
 
-        if (header == headers.WCLOSE) {
+        if (header == headers1.WCLOSE) {
             std::cout << "Supposed to close" << std::endl;
         }
     };
