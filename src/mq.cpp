@@ -122,36 +122,35 @@ void MQSub::consume() {
 
 void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.StartObject();
-    writer.Key("lat");
+    writer.String("lat");
     writer.Double(lat);
 
-    writer.Key("lon");
+    writer.String("lon");
     writer.Double(lon);
 
-    writer.Key("time");
-    writer.String(time.c_str());
+    writer.String("time");
+    writer.String(time.c_str(), static_cast<SizeType>(time.length()));
+
+    writer.EndObject();
 }
 
 GPSMessage::GPSMessage(Document &d, bool preprocessed) {
     if (preprocessed) {
-        Value& _lon = d["lon"];
-        Value& _lat = d["lat"];
-        Value& _time = d["time"];
+        std::cout << "Preprocessed" << std::endl;
 
-
-        lat = _lat.GetDouble();
-        lon = _lon.GetDouble();
-        time = _time.GetString();
+        lat = GetValueByPointer(d, "/lat")->GetDouble();
+        lon = GetValueByPointer(d, "/lon")->GetDouble();
+        time = GetValueByPointer(d, "/time")->GetString();
     } else {
         lat = GetValueByPointer(d, "/data/lat")->GetDouble();
 
-        std::cout << lat << std::endl;
+//        std::cout << lat << std::endl;
         lon = GetValueByPointer(d, "/data/lon")->GetDouble();
 
-        std::cout << lon << std::endl;
+//        std::cout << lon << std::endl;
         time = d["time"].GetString();
 
-        std::cout << time << std::endl;
+//        std::cout << time << std::endl;
     }
 
 }

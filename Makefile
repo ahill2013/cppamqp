@@ -28,4 +28,4 @@ mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp $(LDLIBS)
 
 clean:
-	rm -f src/*.o *.o bin/pub bin/gps
+	rm -f src/*.o *.o bin/pub bin/gps bin/test bin/gps2
