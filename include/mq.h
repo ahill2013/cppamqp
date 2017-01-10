@@ -34,6 +34,8 @@ struct MessageHeaders {
     std::string GENERICNAME = "MESSAGE";
     std::string CLOSE = "CLOSE";
     std::string GPSFRAME = "GPS";
+    std::string NAV = "NAV";
+    std::string VISUAL = "VISUAL";
     std::string STATUS = "STATUS";
     std::string GETSTATUS = "GETSTATUS";
 
@@ -41,6 +43,8 @@ struct MessageHeaders {
     std::string WGENERICNAME = u8"MESSAGE";
     std::string WCLOSE = u8"CLOSE";
     std::string WGPSFRAME = u8"GPS";
+    std::string WNAV = u8"NAV";
+    std::string WVISUAL = u8"VISUAL";
     std::string WSTATUS = u8"STATUS";
     std::string WGETSTATUS = u8"GETSTATUS";
 
@@ -52,19 +56,22 @@ struct ExchKeys {
     std::string TOPIC = "topic";
     std::string DIRECT = "direct";
 
-    std::string gps_exchange = "GPS";
+    std::string gps_exchange = "gps_exchange";
     std::string gps_key = "gps_key";
 
-    std::string mc_exchange = "MC";
+    std::string mc_exchange = "mc_exchange";
     std::string mc_key = "mc_key";
 
-    std::string vision_exchange = "VISION";
+    std::string vision_exchange = "vision_exchange";
     std::string vision_key = "vision_key";
 
-    std::string control_exchange = "CONTROL";
+    std::string control_exchange = "control_exchange";
     std::string control_key = "control_key";
 
-    std::string nav_exchange = "NAV";
+    std::string log_exchange = "controllog_exchange";
+    std::string log_key = "controllog_key";
+
+    std::string nav_exchange = "nav_exchange";
     std::string nav_key = "nav_key";
 
 
@@ -115,20 +122,56 @@ public:
     double angvel;
     double angacc;
     std::string time;
+    bool ins;
 
     void Serialize(Writer<StringBuffer>& writer) const;
 
     GPSMessage(Document& d, bool);
     ~GPSMessage();
 };
+
+struct Obstacle {
+    double x;
+    double y;
+    double radius;
+
+    // REDFLAG, BLUEFLAG, FENCE, GENERIC
+    int type;
+};
+
+struct Line {
+    double beginX;
+    double beginY;
+    double endX;
+    double endY;
+};
+
+
+
+class Visual {
+public:
+    long time;
+    std::vector<Line>* lines;
+    std::vector<Obstacle>* obstacles;
+
+    void Serialize(Writer<StringBuffer>& writer) const;
+
+
+    void addLine(Line&);
+    void addObstacle(Obstacle&);
+
+
+    Visual(long time);
+    ~Visual();
+};
+
 // Put all message types (as structs) in here, include ways to send and parse them)
 class Processor {
 public:
     // Repeat one of these per message
     std::string encode_gps(GPSMessage& to_encode);
     GPSMessage* decode_gps(std::string to_decode, bool);
-private:
-    Document reader;
+    std::string encode_vision(Visual& to_encode);
 };
 
 

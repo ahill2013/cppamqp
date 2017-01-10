@@ -42,7 +42,7 @@ void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::str
     // Option 2 without headers I want
     AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
 
-    std::map<std::string,AmqpClient::TableValue> header_table = {{messageHeaders.WGENERICNAME, AmqpClient::TableValue(messageHeaders.WGPSFRAME)}};
+    std::map<std::string,AmqpClient::TableValue> header_table = {{messageHeaders.WGENERICNAME, AmqpClient::TableValue(header)}};
     b_message->HeaderTable(header_table);
 
     conn->BasicPublish(exchange, key, b_message, false, false);
@@ -120,6 +120,7 @@ void MQSub::consume() {
     channel->consume(getQueue()).onReceived(messageCb).onSuccess(startCb).onError(errorCb);
 }
 
+// Simple writer
 void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.StartObject();
     writer.String("lat");
@@ -158,6 +159,66 @@ GPSMessage::GPSMessage(Document &d, bool preprocessed) {
 GPSMessage::~GPSMessage() = default;
 
 
+////////////////////////////////////////////////////////////////////////
+
+
+Visual::Visual(long time) {
+    this->time = time;
+    lines = new std::vector<Line>();
+    obstacles = new std::vector<Obstacle>();
+}
+
+void Visual::addLine(Line& line) {
+    lines->push_back(line);
+}
+
+void Visual::addObstacle(Obstacle& obstacle) {
+    obstacles->push_back(obstacle);
+}
+
+
+void Visual::Serialize(Writer<StringBuffer> &writer) const {
+    Document jsonDoc;
+    jsonDoc.SetObject();
+    Document::AllocatorType& allocator = jsonDoc.GetAllocator();
+
+    Value linesArray(kArrayType);
+    Value obsArray(kArrayType);
+
+
+    for (Line& line : *lines) {
+        Value lineVal;
+        lineVal.SetObject();
+        lineVal.AddMember("beginX", line.beginX, allocator);
+        lineVal.AddMember("beginY", line.beginY, allocator);
+        lineVal.AddMember("endX", line.endX, allocator);
+        lineVal.AddMember("endY", line.endY, allocator);
+        linesArray.PushBack(lineVal, allocator);
+    }
+
+    for (Obstacle& obstacle : *obstacles) {
+        Value obsVal;
+        obsVal.SetObject();
+        obsVal.AddMember("x", obstacle.x, allocator);
+        obsVal.AddMember("y", obstacle.y, allocator);
+        obsVal.AddMember("type", obstacle.type, allocator);
+        obsVal.AddMember("radius", obstacle.radius, allocator);
+        obsArray.PushBack(obsVal, allocator);
+    }
+
+    jsonDoc.AddMember("lines", linesArray, allocator);
+    jsonDoc.AddMember("obstacles", obsArray, allocator);
+
+    jsonDoc.Accept(writer);
+}
+
+Visual::~Visual() {
+    delete lines;
+    delete obstacles;
+}
+
+///////////////////////////////////////////////////////////////////////////
+
 std::string Processor::encode_gps(GPSMessage& to_encode) {
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
@@ -170,4 +231,12 @@ GPSMessage* Processor::decode_gps(std::string to_decode, bool preprocessed) {
     Document d;
     d.Parse(to_decode.c_str());
     return new GPSMessage(d, preprocessed);
+}
+
+std::string Processor::encode_vision(Visual &to_encode) {
+    StringBuffer buffer;
+    Writer<StringBuffer> writer(buffer);
+
+    to_encode.Serialize(writer);
+    return buffer.GetString();
 }

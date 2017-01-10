@@ -62,4 +62,41 @@ int main() {
     std::cout << "Lat: " << gpsMessage1->lat << std::endl;
     std::cout << "Lon: " << gpsMessage1->lon << std::endl;
     std::cout << "Time: " << gpsMessage1->time << std::endl;
+
+
+
+    long time = 1000000001;
+    Visual* visual = new Visual(time);
+
+    Line ex;
+    ex.beginX = -1.0;
+    ex.beginY = -1.0;
+    ex.endX = 1.0;
+    ex.endY = 1.0;
+
+    Line ex2;
+    ex2.beginX = -100000.0;
+    ex2.beginY = -100000.0;
+    ex2.endX = 100000.0;
+    ex2.endY = 100000.0;
+
+    Obstacle ob;
+    ob.radius = 200;
+    ob.x = -10.0;
+    ob.y = -10.0;
+    ob.type = 1;
+
+    Obstacle ob2;
+    ob2.radius = -200;
+    ob2.x = 10.0;
+    ob2.y = 10.0;
+    ob2.type = 3;
+
+    visual->addLine(ex);
+    visual->addLine(ex2);
+    visual->addObstacle(ob);
+    visual->addObstacle(ob2);
+
+    std::cout << "\n" << processor->encode_vision(*visual) << std::endl;
+
 }

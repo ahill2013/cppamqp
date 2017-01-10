@@ -51,8 +51,8 @@ struct ev_loop* sub_loop = ev_loop_new();
  */
 void gps_publisher(std::string host) {
 
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.gps_key;
+    std::string exchange = exchKeys.vision_exchange;
+    std::string key = exchKeys.nav_key;
 
     AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
 
@@ -67,17 +67,41 @@ void gps_publisher(std::string host) {
     // Turn this into a while(true) loop to keep posting messages
     while (_iterations < 10) {
 
-        Document jsonDoc;
-        std::string message ="{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
-                "\"tow\": 478500, \"crc\": 54878, \"length\": 11, \"flags\": 0, \"ns\": 0, \"preamble\": 85, "
-                "\"payload\": \"+wYkTQcAAAAAAAA=\", \"lon\": -122.17203108848562, \"lat\": 37.430193934253346},"
-                " \"time\": \"2016-10-13T21:49:54.208732\"}";
-        jsonDoc.Parse(message.c_str());
+        long time = 1000000001;
+        Visual* visual = new Visual(time);
 
+        Line ex;
+        ex.beginX = -1.0;
+        ex.beginY = -1.0;
+        ex.endX = 1.0;
+        ex.endY = 1.0;
 
-        GPSMessage* gpsMessage = new GPSMessage(jsonDoc, false);
-        send_message(connection, processor->encode_gps(*gpsMessage), headers.WGPSFRAME, exchange, key, false);
+        Line ex2;
+        ex2.beginX = -100000.0;
+        ex2.beginY = -100000.0;
+        ex2.endX = 100000.0;
+        ex2.endY = 100000.0;
+
+        Obstacle ob;
+        ob.radius = 200;
+        ob.x = -10.0;
+        ob.y = -10.0;
+        ob.type = 1;
+
+        Obstacle ob2;
+        ob2.radius = -200;
+        ob2.x = 10.0;
+        ob2.y = 10.0;
+        ob2.type = 3;
+
+        visual->addLine(ex);
+        visual->addLine(ex2);
+        visual->addObstacle(ob);
+        visual->addObstacle(ob2);
+
+        send_message(connection, processor->encode_vision(*visual), headers.WVISUAL, exchange, key, false);
         std::cout << _iterations << std::endl;
+        std::cout << processor->encode_vision(*visual);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         setMessage();
