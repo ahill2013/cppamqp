@@ -16,6 +16,7 @@
 #include "thread"
 #include "mutex"
 #include "chrono"
+#include <assert.h>
 
 void setup_consumer(AMQP::TcpChannel* chan, std::string queue, std::string exchange, std::string key);
 void setup_exchange(AmqpClient::Channel::ptr_t conn, std::string exchange, std::string type);
@@ -41,6 +42,7 @@ struct MessageHeaders {
 
     // UNICODE versions of headers
     std::string WGENERICNAME = u8"MESSAGE";
+    std::string WCOMMANDS = u8"COMMANDS";
     std::string WCLOSE = u8"CLOSE";
     std::string WGPSFRAME = u8"GPS";
     std::string WNAV = u8"NAV";
@@ -150,7 +152,9 @@ struct Line {
 
 class Visual {
 public:
-    long time;
+    double lat;
+    double lon;
+    unsigned long time;
     std::vector<Line>* lines;
     std::vector<Obstacle>* obstacles;
 
@@ -161,8 +165,34 @@ public:
     void addObstacle(Obstacle&);
 
 
-    Visual(long time);
+    Visual(double lat, double lon, unsigned long time);
     ~Visual();
+};
+
+class Command {
+public:
+    double startang;
+    double linvel;
+    double angvel;
+
+    double endLat;
+    double endLon;
+
+    unsigned int duration;
+
+    Command(const Value& val);
+    ~Command();
+};
+
+class Commands {
+public:
+    double startLat;
+    double startLon;
+
+    std::vector<Command*>* commands;
+
+    Commands(Document& d);
+    ~Commands();
 };
 
 // Put all message types (as structs) in here, include ways to send and parse them)
@@ -172,6 +202,7 @@ public:
     std::string encode_gps(GPSMessage& to_encode);
     GPSMessage* decode_gps(std::string to_decode, bool);
     std::string encode_vision(Visual& to_encode);
+    Commands* decode_commands(std::string to_decode);
 };
 
 

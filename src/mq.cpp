@@ -162,7 +162,9 @@ GPSMessage::~GPSMessage() = default;
 ////////////////////////////////////////////////////////////////////////
 
 
-Visual::Visual(long time) {
+Visual::Visual(double lat, double lon, unsigned long time) {
+    this->lat = lat;
+    this->lon = lon;
     this->time = time;
     lines = new std::vector<Line>();
     obstacles = new std::vector<Obstacle>();
@@ -206,6 +208,9 @@ void Visual::Serialize(Writer<StringBuffer> &writer) const {
         obsArray.PushBack(obsVal, allocator);
     }
 
+    jsonDoc.AddMember("lat", lat, allocator);
+    jsonDoc.AddMember("lon", lon, allocator);
+    jsonDoc.AddMember("time", time, allocator);
     jsonDoc.AddMember("lines", linesArray, allocator);
     jsonDoc.AddMember("obstacles", obsArray, allocator);
 
@@ -218,6 +223,43 @@ Visual::~Visual() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
+
+
+Command::Command(const Value& val) {
+    startang = val["startang"].GetDouble();
+    linvel = val["linvel"].GetDouble();
+    angvel = val["angvel"].GetDouble();
+    duration = val["duration"].GetUint();
+    endLat = val["endLat"].GetDouble();
+    endLon = val["endLon"].GetDouble();
+
+}
+
+Command::~Command() = default;
+
+Commands::Commands(Document &d) {
+
+    const Value& lat = d["startLat"];
+    startLat = lat.GetDouble();
+
+    Value& lon = d["startLon"];
+    startLon = lon.GetDouble();
+
+    commands = new std::vector<Command*>();
+
+    Value& arrayized = d["commands"];
+
+    for (Value::ConstValueIterator itr = arrayized.Begin(); itr != arrayized.End(); ++itr) {
+        Command* comm = new Command(*itr);
+        commands->push_back(comm);
+    }
+}
+
+Commands::~Commands() {
+    delete commands;
+}
+
+////////////////////////////////////////////////////////////////////////
 
 std::string Processor::encode_gps(GPSMessage& to_encode) {
     StringBuffer buffer;
@@ -239,4 +281,10 @@ std::string Processor::encode_vision(Visual &to_encode) {
 
     to_encode.Serialize(writer);
     return buffer.GetString();
+}
+
+Commands* Processor::decode_commands(std::string to_decode) {
+    Document d;
+    d.Parse(to_decode.c_str());
+    return new Commands(d);
 }

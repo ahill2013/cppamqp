@@ -1,5 +1,6 @@
 TEST=src/proctest.o mq.o
 VISTEST=src/visual_test.o mq.o
+COMTEST=src/command_test.o mq.o
 GOBJ= src/gps.o mq.o
 GOBJS= src/gps2.o mq.o
 JTEST= jsontest.o mq.o
@@ -15,6 +16,9 @@ test: $(TEST)
 
 vis: $(VISTEST)
 	$(CC) $(CXXFLAGS) $(VISTEST) -o bin/vis_test $(LDLIBS)
+
+com: $(COMTEST)
+	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
 
 gps: $(GOBJ)
 	$(CC) $(CXXFLAGS) $(GOBJ) -o bin/gps $(LDLIBS)
