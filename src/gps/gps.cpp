@@ -1,5 +1,5 @@
-#include "../include/mq.h"
-#include "../include/processor.h"
+#include "../../include/mq.h"
+#include "../../include/processor.h"
 #include <stdio.h>
 
 MessageHeaders headers;
@@ -52,8 +52,8 @@ struct ev_loop* sub_loop = ev_loop_new();
  */
 void gps_publisher(std::string host) {
 
-    std::string exchange = exchKeys.vision_exchange;
-    std::string key = exchKeys.nav_key;
+    std::string exchange = exchKeys.gps_exchange;
+    std::string key = exchKeys.gps_key;
 
     AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
 
@@ -63,48 +63,13 @@ void gps_publisher(std::string host) {
 
     int _iterations = 0;
 
-    Processor* processor = new Processor();
 
     // Turn this into a while(true) loop to keep posting messages
     while (_iterations < 10) {
 
-        long time = 1000000001;
-        Lines* lines = new Lines(1213124.14134124, 134124.1241414, time);
-        Obstacles* obstacles = new Obstacles(1231231.123123122, 1241412424.12414124134124, time);
-
-        Line ex;
-        ex.beginX = -1.0;
-        ex.beginY = -1.0;
-        ex.endX = 1.0;
-        ex.endY = 1.0;
-
-        Line ex2;
-        ex2.beginX = -100000.0;
-        ex2.beginY = -100000.0;
-        ex2.endX = 100000.0;
-        ex2.endY = 100000.0;
-
-        Obstacle ob;
-        ob.radius = 200;
-        ob.x = -10.0;
-        ob.y = -10.0;
-        ob.type = 1;
-
-        Obstacle ob2;
-        ob2.radius = -200;
-        ob2.x = 10.0;
-        ob2.y = 10.0;
-        ob2.type = 3;
-
-        lines->addLine(ex);
-        lines->addLine(ex2);
-        obstacles->addObstacle(ob);
-        obstacles->addObstacle(ob2);
-
-        send_message(connection, processor->encode_lines(*lines), headers.WLINES, exchange, key, false);
-        send_message(connection, processor->encode_obstacles(*obstacles), headers.WOBSTACLES, exchange, key, false);
+        std::string message = "my_message";
+        send_message(connection, message, headers.WGPSFRAME, exchange, key, false);
         std::cout << _iterations << std::endl;
-        std::cout << processor->encode_lines(*lines);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         setMessage();

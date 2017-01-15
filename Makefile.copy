@@ -12,22 +12,25 @@ LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq
 all: gps
 
 test: $(TEST)
-	$(CC) $(CXXFLAGS) $(TEST) -o bin/test $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(TEST) -o exec/test $(LDLIBS)
 
 vis: $(VISTEST)
-	$(CC) $(CXXFLAGS) $(VISTEST) -o bin/vis_test $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(VISTEST) -o exec/vis_test $(LDLIBS)
 
 com: $(COMTEST)
-	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(COMTEST) -o exec/com_test $(LDLIBS)
 
 gps: $(GOBJ)
-	$(CC) $(CXXFLAGS) $(GOBJ) -o bin/gps $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(GOBJ) -o exec/gps $(LDLIBS)
 
 gpss: $(GOBJS)
-	$(CC) $(CXXFLAGS) $(GOBJS) -o bin/gps2 $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(GOBJS) -o exec/gps2 $(LDLIBS)
 
 jsontest: $(JTEST)
-	$(CC) $(CXXFLAGS) $(JTEST) -o bin/jtest $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(JTEST) -o exec/jtest $(LDLIBS)
+
+main.o: pub.cpp
+	$(CC) $(CXXFLAGS) -c pub.cpp $(LDLIBS)
 
 mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp $(LDLIBS)

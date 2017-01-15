@@ -1,5 +1,5 @@
-#include "../include/mq.h"
-#include "../include/processor.h"
+#include "../../include/mq.h"
+#include "../../include/processor.h"
 #include <stdio.h>
 
 MessageHeaders headers;
@@ -41,15 +41,61 @@ int delivered = 0;
 
 struct ev_loop* sub_loop = ev_loop_new();
 
+
+/**
+ * This is where all GPS computations will take place. Check data fields for changes on loop. If state of the
+ * robot has changed respond accordingly.
+ *
+ * Set up a loop to publish the location, acceleration, velocity, etc. once every tenth of a second.
+ * TODO: Periodically send a status update to the Control unit
+ * @param host string name of the host with the ip:port number as necessary
+ */
+void gps_publisher(std::string host) {
+
+    std::string exchange = exchKeys.gps_exchange;
+    std::string key = exchKeys.gps_key;
+
+    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
+
+    for (auto const& kv : exchKeys.declared) {
+        setup_exchange(connection, kv.first, kv.second);
+    }
+
+    int _iterations = 0;
+
+    Processor* processor = new Processor();
+
+    // Turn this into a while(true) loop to keep posting messages
+    while (_iterations < 10) {
+
+        Document jsonDoc;
+        std::string message ="{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
+                "\"tow\": 478500, \"crc\": 54878, \"length\": 11, \"flags\": 0, \"ns\": 0, \"preamble\": 85, "
+                "\"payload\": \"+wYkTQcAAAAAAAA=\", \"lon\": -122.17203108848562, \"lat\": 37.430193934253346},"
+                " \"time\": \"2016-10-13T21:49:54.208732\"}";
+        jsonDoc.Parse(message.c_str());
+
+
+        GPSMessage* gpsMessage = new GPSMessage(jsonDoc, false);
+        send_message(connection, processor->encode_gps(*gpsMessage), headers.WGPSFRAME, exchange, key, false);
+        std::cout << _iterations << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        setMessage();
+        _iterations++;
+    }
+
+    std::string closing = "closing";
+    close_message(connection, closing, exchange, key, false);
+}
+
 // Listen for incoming information like commands from Control or requests from other components
 void gps_subscriber(std::string host) {
     MessageHeaders headers1;
 
-    Processor* processor = new Processor();
-
-    std::string queue = exchKeys.mc_sub;
-    std::string exchange = exchKeys.nav_exchange;
-    std::string key = exchKeys.mc_key;
+    std::string queue = exchKeys.gps_sub;
+    std::string exchange = exchKeys.gps_exchange;
+    std::string key = exchKeys.gps_key;
 
     MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
     AMQP::TcpChannel* chan = subscriber->getChannel();
@@ -69,7 +115,7 @@ void gps_subscriber(std::string host) {
     };
 
     // Handle commands. Every time a message arrives this is called
-    auto messageCb = [chan, headers1, processor](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
+    auto messageCb = [chan, headers1](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
         std::cout << "Message Delivered" << std::endl;
 
         delivered++;
@@ -79,20 +125,6 @@ void gps_subscriber(std::string host) {
         std::string header = message.headers().get("MESSAGE");
 
         std::cout << header.c_str() << std::endl;
-
-        std::string mess = message.message();
-        std::cout << mess.c_str() << std::endl;
-        if (header == headers.WCOMMANDS) {
-            Commands* commands = processor->decode_commands(mess);
-
-            for (auto iter = commands->commands->begin(); iter != commands->commands->end(); ++iter) {
-                Command* command = *iter;
-
-                std::cout << command->angvel << std::endl;
-                std::cout << command->duration << std::endl;
-            }
-        }
-
         std::cout << getMessage() << std::endl;
         setMessage();
 
@@ -107,8 +139,6 @@ void gps_subscriber(std::string host) {
     for (auto const & kv : exchange_keys) {
         setup_consumer(chan, subscriber->getQueue(), kv.first, kv.second);
     }
-
-    setup_consumer(chan, subscriber->getQueue(), exchange, key);
     chan->consume(subscriber->getQueue()).onReceived(messageCb).onSuccess(startCb).onError(errorCb);    // Start consuming messages
 
     ev_run(sub_loop, 0);    // Run event loop ev_unloop(sub_loop) will kill the event loop
@@ -120,12 +150,9 @@ int main() {
 
     exchange_keys.insert({exchKeys.gps_exchange,exchKeys.gps_key});
     std::thread sub(gps_subscriber, host);
-//    std::thread pub(gps_publisher, host);
+    std::thread pub(gps_publisher, host);
 
     sub.join();
-//    pub.join();
+    pub.join();
 
 }
-
-
-

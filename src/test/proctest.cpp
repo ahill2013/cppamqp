@@ -2,8 +2,8 @@
 // Created by armin1215 on 12/4/16.
 //
 
-#include "../include/mq.h"
-#include "../include/processor.h"
+#include "../../include/mq.h"
+#include "../../include/processor.h"
 #include <stdio.h>
 
 int main() {
