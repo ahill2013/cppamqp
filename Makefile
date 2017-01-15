@@ -1,8 +1,8 @@
-TEST=src/proctest.o mq.o
-VISTEST=src/visual_test.o mq.o
-COMTEST=src/command_test.o mq.o
-GOBJ= src/gps.o mq.o
-GOBJS= src/gps2.o mq.o
+TEST=src/proctest.o mq.o processor.o
+VISTEST=src/visual_test.o mq.o processor.o
+COMTEST=src/command_test.o mq.o processor.o
+GOBJ= src/gps.o mq.o processor.o
+GOBJS= src/gps2.o mq.o processor.o
 JTEST= jsontest.o mq.o
 CC=g++
 DEBUG=-g -O0
@@ -34,6 +34,9 @@ main.o: pub.cpp
 
 mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp $(LDLIBS)
+
+processor.o: src/processor.cpp include/processor.h
+	$(CC) $(CXXFLAGS) -c src/processor.cpp $(LDLIBS)
 
 clean:
 	rm -f src/*.o *.o bin/pub bin/gps bin/test bin/gps2

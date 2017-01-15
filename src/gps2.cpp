@@ -1,4 +1,5 @@
 #include "../include/mq.h"
+#include "../include/processor.h"
 #include <stdio.h>
 
 MessageHeaders headers;

@@ -1,4 +1,5 @@
 #include "../include/mq.h"
+#include "../include/processor.h"
 #include <stdio.h>
 
 MessageHeaders headers;
@@ -68,7 +69,8 @@ void gps_publisher(std::string host) {
     while (_iterations < 10) {
 
         long time = 1000000001;
-        Visual* visual = new Visual(1213124.14134124, 134124.1241414, time);
+        Lines* lines = new Lines(1213124.14134124, 134124.1241414, time);
+        Obstacles* obstacles = new Obstacles(1231231.123123122, 1241412424.12414124134124, time);
 
         Line ex;
         ex.beginX = -1.0;
@@ -94,14 +96,15 @@ void gps_publisher(std::string host) {
         ob2.y = 10.0;
         ob2.type = 3;
 
-        visual->addLine(ex);
-        visual->addLine(ex2);
-        visual->addObstacle(ob);
-        visual->addObstacle(ob2);
+        lines->addLine(ex);
+        lines->addLine(ex2);
+        obstacles->addObstacle(ob);
+        obstacles->addObstacle(ob2);
 
-        send_message(connection, processor->encode_vision(*visual), headers.WVISUAL, exchange, key, false);
+        send_message(connection, processor->encode_lines(*lines), headers.WLINES, exchange, key, false);
+        send_message(connection, processor->encode_obstacles(*obstacles), headers.WOBSTACLES, exchange, key, false);
         std::cout << _iterations << std::endl;
-        std::cout << processor->encode_vision(*visual);
+        std::cout << processor->encode_lines(*lines);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         setMessage();

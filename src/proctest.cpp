@@ -3,6 +3,7 @@
 //
 
 #include "../include/mq.h"
+#include "../include/processor.h"
 #include <stdio.h>
 
 int main() {
@@ -66,7 +67,8 @@ int main() {
 
 
     long time = 1000000001;
-    Visual* visual = new Visual(time);
+    Lines* lines = new Lines(10, 10, time);
+    Obstacles* obstacles = new Obstacles(-10, -10, time);
 
     Line ex;
     ex.beginX = -1.0;
@@ -92,11 +94,53 @@ int main() {
     ob2.y = 10.0;
     ob2.type = 3;
 
-    visual->addLine(ex);
-    visual->addLine(ex2);
-    visual->addObstacle(ob);
-    visual->addObstacle(ob2);
+    lines->addLine(ex);
+    lines->addLine(ex2);
+    obstacles->addObstacle(ob);
+    obstacles->addObstacle(ob2);
 
-    std::cout << "\n" << processor->encode_vision(*visual) << std::endl;
+    std::cout << "Test Lines json encoding" << std::endl;
+    std::cout << "\n" << processor->encode_lines(*lines) << std::endl;
+
+    std::cout << "Test Obstacles json encoding" << std::endl;
+    std::cout << "\n" << processor->encode_obstacles(*obstacles);
+
+    std::string unit = "VISION";
+    bool stat = false;
+    std::string log = "Exception";
+    Status* status = new Status(unit, stat, log);
+
+    MotorBroadcast* motorBroadcast = new MotorBroadcast(143141234124);
+    motorBroadcast->addLeft(10);
+    motorBroadcast->addLeft(3200);
+    motorBroadcast->addLeft(-0.5);
+
+    motorBroadcast->addRight(-10);
+    motorBroadcast->addRight(-3200);
+    motorBroadcast->addRight(0.234);
+
+    std::cout << "Test Status encoding" << std::endl;
+    std::cout << processor->encode_status(*status) << std::endl;
+
+    std::cout << "Test Motorbroadcast encoding" << std::endl;
+    std::cout << processor->encode_motorbroad(*motorBroadcast) << std::endl;
+
+
+    std::string motorbroad = processor->encode_motorbroad(*motorBroadcast);
+
+    std::cout << "Test MotorBroadcast decoding" << std::endl;
+    MotorBroadcast* decodedBroadcast = processor->decode_motorbroad(motorbroad);
+
+    std::cout << "Motor time: " << decodedBroadcast->time << std::endl;
+
+    for (std::vector<double>::iterator iter = decodedBroadcast->getLeft()->begin(); iter != decodedBroadcast->getLeft()->end(); ++iter) {
+        std::cout << "Left value: " << *iter << std::endl;
+    }
+
+    for (std::vector<double>::iterator iter = decodedBroadcast->getRight()->begin(); iter != decodedBroadcast->getRight()->end(); ++iter) {
+        std::cout << "Right value: " << *iter << std::endl;
+    }
+
+
 
 }
