@@ -6,13 +6,14 @@ SimpleAmqpClient:
     Need to install boost (sudo apt-get install libboost-all-dev)
     Need to install cmake (sudo apt-get install cmake)
     Need to install doxygen (sudo apt-get install doxygen)
+    Need to install libev (ev.h)
 
     How to install rabbitmq-c:
 
         Download rabbitmq-c from git
         In rabbitmq-c folder run these commands:
             mkdir build && cd build
-            cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+            cmake -ENABLE_SSL_SUPPORT=OFF -DCMAKE_INSTALL_PREFIX=/usr/local ..
             sudo cmake --build . --target install
 
     After installing rabbitmq-c you need to change the PATH variable to include these two directories
