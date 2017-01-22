@@ -162,6 +162,14 @@ void mc_subscriber(std::string host) {
         if (header == headers1.WCOMMANDS) {
             Commands* commands = Processor::decode_commands(message.message());
             setCommands(commands);
+            std::cout << "Got commands" << std::endl;
+            Commands* comm_ret = getCommands();
+
+            Command* comm = comm_ret->remove();
+
+            std::cout << comm->angvel << std::endl;
+            std::cout << comm->startang << std::endl;
+            std::cout << comm->duration << std::endl;
         } else if (header == headers1.WGPSFRAME) {
             GPSMessage* gpsMessage = Processor::decode_gps(message.message(), true);
             setGPS(gpsMessage);
@@ -222,6 +230,7 @@ int main() {
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});
+    exchange_keys.insert({exchKeys.nav_exchange, exchKeys.mc_key});
     std::thread sub(mc_subscriber, host);
     std::thread pub(mc_handler, host);
 

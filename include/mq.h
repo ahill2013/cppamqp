@@ -82,7 +82,8 @@ struct ExchKeys {
     std::string mc_sub = "mc_sub_queue";
     std::string vision_sub = "vision_sub_queue";
 
-    std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC}, {control_exchange, TOPIC}};
+    std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC},
+                                                  {control_exchange, TOPIC}, {nav_exchange, TOPIC}};
 
 };
 
