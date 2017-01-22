@@ -1,5 +1,4 @@
 TEST=src/test/proctest.o mq.o processor.o
-MCTEST=src/mc/mc.o mq.o processor.o
 VISTEST=src/test/visual_test.o mq.o processor.o
 COMTEST=src/test/command_test.o mq.o processor.o
 GOBJ= src/gps/gps.o mq.o processor.o
@@ -10,7 +9,7 @@ DEBUG=-g -O0
 CXXFLAGS=-Wall $(DEBUG) -std=c++11
 LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq
 
-all: gps test
+all: gps
 
 test: $(TEST)
 	$(CC) $(CXXFLAGS) $(TEST) -o bin/test $(LDLIBS)
@@ -21,9 +20,6 @@ vis: $(VISTEST)
 com: $(COMTEST)
 	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
 
-mc: $(MCTEST)
-	$(CC) $(CXXFLAGS) $(MCTEST) -o bin/mc $(LDLIBS)
-
 gps: $(GOBJ)
 	$(CC) $(CXXFLAGS) $(GOBJ) -o bin/gps $(LDLIBS)
 
@@ -33,9 +29,10 @@ gpss: $(GOBJS)
 jsontest: $(JTEST)
 	$(CC) $(CXXFLAGS) $(JTEST) -o bin/jtest $(LDLIBS)
 
-mq.o: src/mq.cpp include/mq.h
-	$(CC) $(CXXFLAGS) -c src/mq.cpp $(LDLIBS)
+main.o: pub.cpp
+	$(CC) $(CXXFLAGS) -c pub.cpp $(LDLIBS)
 
+m
 processor.o: src/processor.cpp include/processor.h
 	$(CC) $(CXXFLAGS) -c src/processor.cpp $(LDLIBS)
 

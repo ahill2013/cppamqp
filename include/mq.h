@@ -19,11 +19,11 @@ void setup_exchange(AmqpClient::Channel::ptr_t conn, std::string exchange, std::
 void setup_cop_exchange(AMQP::TcpChannel* chan, std::string exchange, std::string type);
 // Send a message to an exchange with a key
 void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::string header,
-                  std::string exchange, std::string key, bool json);
+                  std::string exchange, std::string key);
 
 // Tell subscribers to either unbind or to shut themselves down
 void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
-                  std::string exchange, std::string key, bool json);
+                  std::string exchange, std::string key);
 
 struct MessageHeaders {
 
@@ -46,7 +46,9 @@ struct MessageHeaders {
 
     std::string WGPSFRAME = u8"GPS";
     std::string WCOMMANDS = u8"COMMANDS";
+    std::string WINTERVAL = u8"INTERVAL";
     std::string WLINES = u8"LINES";
+    std::string WMBROAD = u8"MOTORBROAD";
     std::string WOBSTACLES = u8"OBSTACLES";
 
 
@@ -80,9 +82,27 @@ struct ExchKeys {
     std::string mc_sub = "mc_sub_queue";
     std::string vision_sub = "vision_sub_queue";
 
-    std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC}};
+    std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC}, {control_exchange, TOPIC}};
 
 };
+
+
+//enum header_code {
+//    egps,
+//    ecom,
+//    eclose
+//};
+//
+//std::map<std::string, header_code> map = {
+//        { mapHeaders.WGPSFRAME, header_code::egps},
+//        {mapHeaders.WCOMMANDS, header_code ::ecom},
+//        {mapHeaders.WCLOSE, header_code ::eclose}
+//};
+//
+//
+//header_code hash(std::string header) {
+//    return map->
+//}
 
 
 class MQSub {

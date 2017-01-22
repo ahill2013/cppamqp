@@ -37,6 +37,13 @@ GPSMessage::GPSMessage(Document &d, bool preprocessed) {
 
 GPSMessage::~GPSMessage() = default;
 
+////////////////////////////////////////////////////////////////////////
+
+Interval::Interval(Document& d) {
+    interval = d["interval"].GetDouble();
+}
+
+Interval::~Interval() = default;
 
 ////////////////////////////////////////////////////////////////////////
 
@@ -134,6 +141,8 @@ Command::Command(const Value& val) {
 
 }
 
+Command::~Command() = default;
+
 Commands::Commands(Document &d) {
 
     Value& lat = d["startLat"];
@@ -142,7 +151,7 @@ Commands::Commands(Document &d) {
     Value& lon = d["startLon"];
     startLon = lon.GetDouble();
 
-    commands = new std::vector<Command*>();
+    commands = new std::deque<Command*>();
 
     Value& arrayized = d["commands"];
 
@@ -150,6 +159,17 @@ Commands::Commands(Document &d) {
         Command* comm = new Command(*itr);
         commands->push_back(comm);
     }
+}
+
+
+bool Commands::isEmpty() {
+    return commands->empty();
+}
+
+Command* Commands::remove() {
+    Command* command = commands->front();
+    commands->pop_front();
+    return command;
 }
 
 Commands::~Commands() {
@@ -162,6 +182,16 @@ Status::Status(std::string comp, bool status, std::string logmessage) {
     unit = comp;
     running = status;
     message = logmessage;
+}
+
+Status::Status(Document& d) {
+    Value& u = d["unit"];
+    Value& run = d["running"];
+    Value& mess = d["message"];
+
+    unit = u.GetString();
+    running = run.GetBool();
+    message = mess.GetString();
 }
 
 void Status::Serialize(Writer<StringBuffer> &writer) const {
@@ -194,15 +224,19 @@ MotorBroadcast::MotorBroadcast(unsigned long t) {
 }
 
 MotorBroadcast::MotorBroadcast(Document& d) {
+
+    left = new std::vector<double>();
+    right = new std::vector<double>();
+
     Value& t = d["time"];
     time = t.GetUint64();
 
     Value& leftArray = d["left"];
     Value& rightArray = d["right"];
 
-    for (Value::ConstValueIterator itr = leftArray.Begin(); itr != leftArray.End(); ++itr) {
-        double encoder_val = (*itr).GetDouble();
-        left->push_back(encoder_val);
+    for (SizeType i  = 0; i < leftArray.Size(); i++) {
+        const Value& encoder_val = leftArray[i];
+        left->push_back(encoder_val.GetDouble());
     }
 
     for (Value::ConstValueIterator itr = rightArray.Begin(); itr != rightArray.End(); ++itr) {
@@ -261,65 +295,3 @@ MotorBroadcast::~MotorBroadcast() {
 }
 
 /////////////////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////////////////
-
-std::string Processor::encode_gps(GPSMessage& to_encode) {
-    StringBuffer buffer;
-    Writer<StringBuffer> writer(buffer);
-
-    to_encode.Serialize(writer);
-    return buffer.GetString();
-}
-
-GPSMessage* Processor::decode_gps(std::string to_decode, bool preprocessed) {
-    Document d;
-    d.Parse(to_decode.c_str());
-    return new GPSMessage(d, preprocessed);
-}
-
-std::string Processor::encode_lines(Lines &to_encode) {
-    StringBuffer buffer;
-    Writer<StringBuffer> writer(buffer);
-
-    to_encode.Serialize(writer);
-    return buffer.GetString();
-}
-
-std::string Processor::encode_obstacles(Obstacles &to_encode) {
-    StringBuffer buffer;
-    Writer<StringBuffer> writer(buffer);
-
-    to_encode.Serialize(writer);
-    return buffer.GetString();
-}
-
-Commands* Processor::decode_commands(std::string to_decode) {
-    Document d;
-    d.Parse(to_decode.c_str());
-    return new Commands(d);
-}
-
-std::string Processor::encode_status(Status &to_encode) {
-    StringBuffer buffer;
-    Writer<StringBuffer> writer(buffer);
-
-    to_encode.Serialize(writer);
-    return buffer.GetString();
-}
-
-std::string Processor::encode_motorbroad(MotorBroadcast &to_encode) {
-    StringBuffer buffer;
-    Writer<StringBuffer> writer(buffer);
-
-    to_encode.Serialize(writer);
-    return buffer.GetString();
-}
-
-MotorBroadcast* Processor::decode_motorbroad(std::string to_decode) {
-    Document d;
-    d.Parse(to_decode.c_str());
-    return new MotorBroadcast(d);
-}

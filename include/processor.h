@@ -6,6 +6,7 @@
 #define CPPFRAME_PROCESSOR_H
 
 #include <vector>
+#include <deque>
 #include "../lib/rapidjson/document.h"
 #include "../lib/rapidjson/writer.h"
 #include "../lib/rapidjson/stringbuffer.h"
@@ -28,6 +29,14 @@ public:
 
     GPSMessage(Document& d, bool);
     ~GPSMessage();
+};
+
+class Interval {
+public:
+    double interval;
+
+    Interval(Document& d);
+    ~Interval();
 };
 
 struct Obstacle {
@@ -97,9 +106,13 @@ public:
     double startLat;
     double startLon;
 
-    std::vector<Command*>* commands;
+    std::deque<Command*>* commands;
 
     Commands(Document& d);
+
+    Command* remove();
+    bool isEmpty();
+
     ~Commands();
 };
 
@@ -112,6 +125,7 @@ public:
     void Serialize(Writer<StringBuffer>& writer) const;
 
     Status(std::string, bool status, std::string);
+    Status(Document&);
     ~Status();
 };
 
@@ -139,22 +153,77 @@ private:
 
 
 // Put all message types (as structs) in here, include ways to send and parse them)
-class Processor {
-public:
-    // Repeat one of these per message
-    std::string encode_gps(GPSMessage& to_encode);
-    GPSMessage* decode_gps(std::string to_decode, bool);
+namespace Processor {
 
-    std::string encode_lines(Lines& to_encode);
+    static std::string encode_gps(GPSMessage &to_encode) {
+        StringBuffer buffer;
+        Writer<StringBuffer> writer(buffer);
 
-    std::string encode_obstacles(Obstacles& to_encode);
+        to_encode.Serialize(writer);
+        return buffer.GetString();
+    }
 
-    Commands* decode_commands(std::string to_decode);
+    static GPSMessage *decode_gps(std::string to_decode, bool preprocessed) {
+        Document d;
+        d.Parse(to_decode.c_str());
+        return new GPSMessage(d, preprocessed);
+    }
 
-    std::string encode_status(Status& to_encode);
+    static Interval *decode_interval(std::string to_decode) {
+        Document d;
+        d.Parse(to_decode.c_str());
+        return new Interval(d);
+    }
 
-    std::string encode_motorbroad(MotorBroadcast& to_encode);
-    MotorBroadcast* decode_motorbroad(std::string to_decode);
+    static std::string encode_lines(Lines &to_encode) {
+        StringBuffer buffer;
+        Writer<StringBuffer> writer(buffer);
+
+        to_encode.Serialize(writer);
+        return buffer.GetString();
+    }
+
+    static std::string encode_obstacles(Obstacles &to_encode) {
+        StringBuffer buffer;
+        Writer<StringBuffer> writer(buffer);
+
+        to_encode.Serialize(writer);
+        return buffer.GetString();
+    }
+
+    static Commands *decode_commands(std::string to_decode) {
+        Document d;
+        d.Parse(to_decode.c_str());
+        return new Commands(d);
+    }
+
+    static std::string encode_status(Status &to_encode) {
+        StringBuffer buffer;
+        Writer<StringBuffer> writer(buffer);
+
+        to_encode.Serialize(writer);
+        return buffer.GetString();
+    }
+
+    static Status* decode_status(std::string to_decode) {
+        Document d;
+        d.Parse(to_decode.c_str());
+        return new Status(d);
+    }
+
+    static std::string encode_motorbroad(MotorBroadcast &to_encode) {
+        StringBuffer buffer;
+        Writer<StringBuffer> writer(buffer);
+
+        to_encode.Serialize(writer);
+        return buffer.GetString();
+    }
+
+    static MotorBroadcast *decode_motorbroad(std::string to_decode) {
+        Document d;
+        d.Parse(to_decode.c_str());
+        return new MotorBroadcast(d);
+    }
 };
 
 

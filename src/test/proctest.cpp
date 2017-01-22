@@ -40,23 +40,20 @@ int main() {
     Writer<StringBuffer> writer(buffer); // Assign the buffer to a RapidJSON Writer
     d.Accept(writer); // Add the Writer to the document
 
-//    std::cout << buffer.GetString() << std::endl;
-    Processor* processor = new Processor();
-
-    std::cout.precision(21); // Set decimal precision. Numbers are right but it doesn't show up when you print always
+    std::cout.precision(12); // Set decimal precision. Numbers are right but it doesn't show up when you print always
 
     std::cout << "\nRTK MESSAGE PARSED INTO GPS MESSAGE" << std::endl;
-    GPSMessage* gpsMessage = processor->decode_gps(message, false);
+    GPSMessage* gpsMessage = Processor::decode_gps(message, false);
     printf("Lat: %.10f\n", gpsMessage->lat);
     printf("Lon: %.10f\n", gpsMessage->lon);
     printf("Time: %s\n", gpsMessage->time.c_str()); // Insecure, I know
 
 
     std::cout << "\nENCODED INTO GPSMESSAGE TO BE USED BY MOTORS, NAV, ETC." << std::endl;
-    std::string encoded = processor->encode_gps(*gpsMessage);
+    std::string encoded = Processor::encode_gps(*gpsMessage);
     std::cout << encoded << std::endl;
 
-    GPSMessage* gpsMessage1 = processor->decode_gps(encoded, true);
+    GPSMessage* gpsMessage1 = Processor::decode_gps(encoded, true);
 
     std::cout << "\nDECODED INTO GPSMESSAGE CLASS" << std::endl;
 //    std::cout << encoded << std::endl;
@@ -100,10 +97,10 @@ int main() {
     obstacles->addObstacle(ob2);
 
     std::cout << "Test Lines json encoding" << std::endl;
-    std::cout << "\n" << processor->encode_lines(*lines) << std::endl;
+    std::cout << "\n" << Processor::encode_lines(*lines) << std::endl;
 
     std::cout << "Test Obstacles json encoding" << std::endl;
-    std::cout << "\n" << processor->encode_obstacles(*obstacles);
+    std::cout << "\n" << Processor::encode_obstacles(*obstacles);
 
     std::string unit = "VISION";
     bool stat = false;
@@ -120,16 +117,16 @@ int main() {
     motorBroadcast->addRight(0.234);
 
     std::cout << "Test Status encoding" << std::endl;
-    std::cout << processor->encode_status(*status) << std::endl;
+    std::cout << Processor::encode_status(*status) << std::endl;
 
     std::cout << "Test Motorbroadcast encoding" << std::endl;
-    std::cout << processor->encode_motorbroad(*motorBroadcast) << std::endl;
+    std::cout << Processor::encode_motorbroad(*motorBroadcast) << std::endl;
 
 
-    std::string motorbroad = processor->encode_motorbroad(*motorBroadcast);
+    std::string motorbroad = Processor::encode_motorbroad(*motorBroadcast);
 
     std::cout << "Test MotorBroadcast decoding" << std::endl;
-    MotorBroadcast* decodedBroadcast = processor->decode_motorbroad(motorbroad);
+    MotorBroadcast* decodedBroadcast = Processor::decode_motorbroad(motorbroad);
 
     std::cout << "Motor time: " << decodedBroadcast->time << std::endl;
 
@@ -140,7 +137,4 @@ int main() {
     for (std::vector<double>::iterator iter = decodedBroadcast->getRight()->begin(); iter != decodedBroadcast->getRight()->end(); ++iter) {
         std::cout << "Right value: " << *iter << std::endl;
     }
-
-
-
 }

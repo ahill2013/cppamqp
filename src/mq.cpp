@@ -25,7 +25,7 @@ void setup_cop_exchange(AMQP::TcpChannel* chan, std::string exchange, std::strin
 }
 
 void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
-                       std::string exchange, std::string key, bool json) {
+                       std::string exchange, std::string key) {
     AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
 
     std::map<std::string,AmqpClient::TableValue> header_table = {{messageHeaders.WGENERICNAME, AmqpClient::TableValue(messageHeaders.WCLOSE)}};
@@ -35,7 +35,7 @@ void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
 }
 
 void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::string header,
-                  std::string exchange, std::string key, bool json) {
+                  std::string exchange, std::string key) {
 
     // Option 2 without headers I want
     AmqpClient::BasicMessage::ptr_t b_message = AmqpClient::BasicMessage::Create(message);
