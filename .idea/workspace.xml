@@ -10,8 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa5d27c-484e-4241-90f2-c39dcbc94cd0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/mc" afterPath="$PROJECT_DIR$/bin/mc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/mq.h" afterPath="$PROJECT_DIR$/include/mq.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mc/mc.cpp" afterPath="$PROJECT_DIR$/src/mc/mc.cpp" />
     </list>
     <ignored path="CPPFrame.iws" />
@@ -33,11 +32,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="mq.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="mq.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/mq.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="75" column="0" lean-forward="true" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
+            <state relative-caret-position="73">
+              <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -46,8 +45,8 @@
       <file leaf-file-name="processor.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/processor.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="317">
-              <caret line="99" column="30" lean-forward="true" selection-start-line="99" selection-start-column="30" selection-end-line="99" selection-end-column="30" />
+            <state relative-caret-position="1782">
+              <caret line="99" column="30" lean-forward="false" selection-start-line="99" selection-start-column="30" selection-end-line="99" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -56,18 +55,18 @@
       <file leaf-file-name="processor.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/processor.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="558">
-              <caret line="191" column="25" lean-forward="true" selection-start-line="191" selection-start-column="25" selection-end-line="191" selection-end-column="25" />
+            <state relative-caret-position="3438">
+              <caret line="191" column="25" lean-forward="false" selection-start-line="191" selection-start-column="25" selection-end-line="191" selection-end-column="25" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="mc.cpp" pinned="false" current-in-tab="false">
+      <file leaf-file-name="mc.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2072">
-              <caret line="237" column="15" lean-forward="true" selection-start-line="237" selection-start-column="15" selection-end-line="237" selection-end-column="15" />
+            <state relative-caret-position="190">
+              <caret line="211" column="15" lean-forward="false" selection-start-line="211" selection-start-column="15" selection-end-line="211" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -76,7 +75,7 @@
       <file leaf-file-name="mq.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mq.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="160">
+            <state relative-caret-position="612">
               <caret line="34" column="1" lean-forward="false" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
               <folding />
             </state>
@@ -96,8 +95,8 @@
       <file leaf-file-name="gps.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/gps/gps.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="425">
-              <caret line="114" column="61" lean-forward="true" selection-start-line="114" selection-start-column="61" selection-end-line="114" selection-end-column="61" />
+            <state relative-caret-position="2052">
+              <caret line="114" column="61" lean-forward="false" selection-start-line="114" selection-start-column="61" selection-end-line="114" selection-end-column="61" />
               <folding />
             </state>
           </provider>
@@ -116,7 +115,7 @@
       <file leaf-file-name="Makefile" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Makefile">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="486">
+            <state relative-caret-position="558">
               <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
               <folding />
             </state>
@@ -172,8 +171,8 @@
         <option value="$PROJECT_DIR$/src/gps/gps.cpp" />
         <option value="$PROJECT_DIR$/include/processor.h" />
         <option value="$PROJECT_DIR$/src/processor.cpp" />
-        <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
         <option value="$PROJECT_DIR$/include/mq.h" />
+        <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
       </list>
     </option>
   </component>
@@ -186,7 +185,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
     <option name="y" value="52" />
-    <option name="width" value="928" />
+    <option name="width" value="918" />
     <option name="height" value="1028" />
   </component>
   <component name="ProjectView">
@@ -556,7 +555,8 @@
       <workItem from="1484521085849" duration="13535000" />
       <workItem from="1484691156456" duration="1726000" />
       <workItem from="1484961540345" duration="9301000" />
-      <workItem from="1485097422267" duration="2119000" />
+      <workItem from="1485097422267" duration="3458000" />
+      <workItem from="1485201661017" duration="1053000" />
     </task>
     <task id="LOCAL-00001" summary="Command from Nav to Motors">
       <created>1484190183533</created>
@@ -576,11 +576,11 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="165392000" />
+    <option name="totallyTimeSpent" value="167784000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="52" width="928" height="1028" extended-state="4" />
-    <editor active="true" />
+    <frame x="65" y="52" width="918" height="1028" extended-state="4" />
+    <editor active="false" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47737068" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -855,7 +855,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Makefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="486">
+        <state relative-caret-position="558">
           <caret line="31" column="0" lean-forward="false" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
           <folding />
         </state>
@@ -880,48 +880,48 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/gps/gps.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="114" column="61" lean-forward="true" selection-start-line="114" selection-start-column="61" selection-end-line="114" selection-end-column="61" />
+        <state relative-caret-position="2052">
+          <caret line="114" column="61" lean-forward="false" selection-start-line="114" selection-start-column="61" selection-end-line="114" selection-end-column="61" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/processor.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="317">
-          <caret line="99" column="30" lean-forward="true" selection-start-line="99" selection-start-column="30" selection-end-line="99" selection-end-column="30" />
+        <state relative-caret-position="1782">
+          <caret line="99" column="30" lean-forward="false" selection-start-line="99" selection-start-column="30" selection-end-line="99" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/processor.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="191" column="25" lean-forward="true" selection-start-line="191" selection-start-column="25" selection-end-line="191" selection-end-column="25" />
+        <state relative-caret-position="3438">
+          <caret line="191" column="25" lean-forward="false" selection-start-line="191" selection-start-column="25" selection-end-line="191" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mq.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
+        <state relative-caret-position="612">
           <caret line="34" column="1" lean-forward="false" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2072">
-          <caret line="237" column="15" lean-forward="true" selection-start-line="237" selection-start-column="15" selection-end-line="237" selection-end-column="15" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/mq.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="75" column="0" lean-forward="true" selection-start-line="75" selection-start-column="0" selection-end-line="75" selection-end-column="0" />
+        <state relative-caret-position="73">
+          <caret line="69" column="0" lean-forward="false" selection-start-line="69" selection-start-column="0" selection-end-line="69" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="211" column="15" lean-forward="false" selection-start-line="211" selection-start-column="15" selection-end-line="211" selection-end-column="15" />
           <folding />
         </state>
       </provider>

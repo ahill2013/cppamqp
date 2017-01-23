@@ -74,7 +74,6 @@ void setCommands(Commands* commands) {
 Commands* getCommands() {
     _mutexes.commands.lock();
     Commands* commands = _data.command;
-    _mutexes.commands.unlock();
     return commands;
 }
 
@@ -203,7 +202,18 @@ void mc_handler(std::string host) {
     }
 
     while(getRunning()) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+
+        Commands* commands = getCommands(); // DO NOT CHANGE
+        if ((commands != nullptr) && !getCommands()->isEmpty()) {   // DO NOT CHANGE
+            Command* to_send = commands->remove();  // DO NOT CHANGE
+            _mutexes.commands.unlock();     // DO NOT CHANGE
+
+            // put code to send command here
+        } else {
+            _mutexes.commands.unlock();     // DO NOT CHANGE
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));  // DO NOT CHANGE
+        }
 
 //        while(!getCommands()->isEmpty()) {
 //            // Send information to MyRio
