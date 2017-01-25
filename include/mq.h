@@ -27,15 +27,6 @@ void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
 
 struct MessageHeaders {
 
-    // ASCII versions of headers
-//    std::string GENERICNAME = "MESSAGE";
-//    std::string CLOSE = "CLOSE";
-//    std::string GPSFRAME = "GPS";
-//    std::string NAV = "NAV";
-//    std::string VISUAL = "VISUAL";
-//    std::string STATUS = "STATUS";
-//    std::string GETSTATUS = "GETSTATUS";
-
     // UNICODE versions of headers
     std::string WGENERICNAME = u8"MESSAGE";
     std::string WCLOSE = u8"CLOSE";
@@ -59,6 +50,10 @@ struct ExchKeys {
     std::string FANOUT = "fanout";
     std::string TOPIC = "topic";
     std::string DIRECT = "direct";
+
+    std::string GPS = "GPS";
+    std::string MC = "MC";
+    std::string VISION = "VISION";
 
     std::string gps_exchange = "gps_exchange";
     std::string gps_key = "gps_key";
@@ -88,25 +83,6 @@ struct ExchKeys {
                                                   {vision_exchange, TOPIC}};
 
 };
-
-
-//enum header_code {
-//    egps,
-//    ecom,
-//    eclose
-//};
-//
-//std::map<std::string, header_code> map = {
-//        { mapHeaders.WGPSFRAME, header_code::egps},
-//        {mapHeaders.WCOMMANDS, header_code ::ecom},
-//        {mapHeaders.WCLOSE, header_code ::eclose}
-//};
-//
-//
-//header_code hash(std::string header) {
-//    return map->
-//}
-
 
 class MQSub {
 public:

@@ -10,20 +10,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa5d27c-484e-4241-90f2-c39dcbc94cd0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/nav.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/com_test" afterPath="$PROJECT_DIR$/bin/com_test" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/mc" afterPath="$PROJECT_DIR$/bin/mc" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/vis_test" afterPath="$PROJECT_DIR$/bin/vis_test" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/mq.h" afterPath="$PROJECT_DIR$/include/mq.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gps/gps.cpp" afterPath="$PROJECT_DIR$/src/gps/gps.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gps/gps2.cpp" afterPath="$PROJECT_DIR$/src/gps/gps2.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mc/mc.cpp" afterPath="$PROJECT_DIR$/src/mc/mc.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mq.cpp" afterPath="$PROJECT_DIR$/src/mq.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/command_test.cpp" afterPath="$PROJECT_DIR$/src/test/command_test.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/proctest.cpp" afterPath="$PROJECT_DIR$/src/test/proctest.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/visual_test.cpp" afterPath="$PROJECT_DIR$/src/test/visual_test.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/vision/vision.cpp" afterPath="$PROJECT_DIR$/src/vision/vision.cpp" />
     </list>
     <ignored path="CPPFrame.iws" />
@@ -48,8 +37,8 @@
       <file leaf-file-name="mq.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/mq.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="41" column="35" lean-forward="false" selection-start-line="41" selection-start-column="35" selection-end-line="41" selection-end-column="35" />
+            <state relative-caret-position="326">
+              <caret line="55" column="34" lean-forward="false" selection-start-line="55" selection-start-column="34" selection-end-line="55" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -58,7 +47,7 @@
       <file leaf-file-name="processor.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/processor.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1224">
+            <state relative-caret-position="-804">
               <caret line="68" column="11" lean-forward="false" selection-start-line="68" selection-start-column="11" selection-end-line="68" selection-end-column="11" />
               <folding />
             </state>
@@ -88,8 +77,8 @@
       <file leaf-file-name="vision.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/vision/vision.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="571">
-              <caret line="143" column="39" lean-forward="true" selection-start-line="143" selection-start-column="39" selection-end-line="143" selection-end-column="39" />
+            <state relative-caret-position="265">
+              <caret line="126" column="55" lean-forward="false" selection-start-line="126" selection-start-column="55" selection-end-line="126" selection-end-column="55" />
               <folding />
             </state>
           </provider>
@@ -98,8 +87,8 @@
       <file leaf-file-name="gps.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/gps/gps.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="67">
-              <caret line="200" column="52" lean-forward="true" selection-start-line="200" selection-start-column="52" selection-end-line="200" selection-end-column="52" />
+            <state relative-caret-position="256">
+              <caret line="127" column="52" lean-forward="false" selection-start-line="127" selection-start-column="52" selection-end-line="127" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -108,7 +97,7 @@
       <file leaf-file-name="mc.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="767">
+            <state relative-caret-position="1364">
               <caret line="232" column="2" lean-forward="true" selection-start-line="232" selection-start-column="2" selection-end-line="232" selection-end-column="2" />
               <folding />
             </state>
@@ -158,10 +147,10 @@
         <option value="$PROJECT_DIR$/src/test/command_test.cpp" />
         <option value="$PROJECT_DIR$/src/gps/gps2.cpp" />
         <option value="$PROJECT_DIR$/src/test/visual_test.cpp" />
+        <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
         <option value="$PROJECT_DIR$/include/mq.h" />
         <option value="$PROJECT_DIR$/src/gps/gps.cpp" />
         <option value="$PROJECT_DIR$/src/vision/vision.cpp" />
-        <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
       </list>
     </option>
   </component>
@@ -434,7 +423,7 @@
       <workItem from="1485231359649" duration="2228000" />
       <workItem from="1485307684928" duration="2209000" />
       <workItem from="1485310181906" duration="1622000" />
-      <workItem from="1485312272341" duration="2022000" />
+      <workItem from="1485312272341" duration="3259000" />
     </task>
     <task id="LOCAL-00001" summary="Command from Nav to Motors">
       <created>1484190183533</created>
@@ -450,11 +439,18 @@
       <option name="project" value="LOCAL" />
       <updated>1484443668679</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="startup message added">
+      <created>1485314335149</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1485314335149</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="175865000" />
+    <option name="totallyTimeSpent" value="177102000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="992" y="52" width="928" height="1028" extended-state="4" />
@@ -496,16 +492,12 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Command from Nav to Motors" />
     <MESSAGE value="Additional messages and code cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Additional messages and code cleanup" />
+    <MESSAGE value="startup message added" />
+    <option name="LAST_COMMIT_MESSAGE" value="startup message added" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/include/mq.h</url>
-          <line>30</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/test/proctest.cpp</url>
           <line>45</line>
@@ -738,26 +730,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/processor.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1224">
-          <caret line="68" column="11" lean-forward="false" selection-start-line="68" selection-start-column="11" selection-end-line="68" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/visual_test.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="774">
           <caret line="43" column="0" lean-forward="false" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/mq.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="41" column="35" lean-forward="false" selection-start-line="41" selection-start-column="35" selection-end-line="41" selection-end-column="35" />
           <folding />
         </state>
       </provider>
@@ -778,26 +754,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/gps/gps.cpp">
+    <entry file="file://$PROJECT_DIR$/include/processor.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="67">
-          <caret line="200" column="52" lean-forward="true" selection-start-line="200" selection-start-column="52" selection-end-line="200" selection-end-column="52" />
+        <state relative-caret-position="-804">
+          <caret line="68" column="11" lean-forward="false" selection-start-line="68" selection-start-column="11" selection-end-line="68" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/mq.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="326">
+          <caret line="55" column="34" lean-forward="false" selection-start-line="55" selection-start-column="34" selection-end-line="55" selection-end-column="34" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="767">
+        <state relative-caret-position="1364">
           <caret line="232" column="2" lean-forward="true" selection-start-line="232" selection-start-column="2" selection-end-line="232" selection-end-column="2" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/gps/gps.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="256">
+          <caret line="127" column="52" lean-forward="false" selection-start-line="127" selection-start-column="52" selection-end-line="127" selection-end-column="52" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/vision/vision.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="571">
-          <caret line="143" column="39" lean-forward="true" selection-start-line="143" selection-start-column="39" selection-end-line="143" selection-end-column="39" />
+        <state relative-caret-position="265">
+          <caret line="126" column="55" lean-forward="false" selection-start-line="126" selection-start-column="55" selection-end-line="126" selection-end-column="55" />
           <folding />
         </state>
       </provider>

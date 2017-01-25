@@ -124,7 +124,7 @@ void vis_publisher(std::string host) {
         std::cout << _iterations << std::endl;
 
         if (_iterations % status == 0) {
-            Status* status = new Status(exchKeys.vision_exchange, getRunning(), "normal");
+            Status* status = new Status(exchKeys.VISION, getRunning(), "normal");
             std::string status_mess = Processor::encode_status(*status);
             send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
             _iterations = 0;

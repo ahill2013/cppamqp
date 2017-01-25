@@ -125,7 +125,7 @@ void gps_publisher(std::string host) {
         std::cout << _iterations << std::endl;
 
         if (_iterations % status == 0) {
-            Status *status = new Status(exchKeys.gps_exchange, getRunning(), "normal");
+            Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
             std::string status_mess = Processor::encode_status(*status);
             send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
 //            _iterations = 0;
