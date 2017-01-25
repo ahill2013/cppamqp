@@ -63,8 +63,6 @@ void gps_publisher(std::string host) {
 
     int _iterations = 0;
 
-    Processor* processor = new Processor();
-
     // Turn this into a while(true) loop to keep posting messages
     while (_iterations < 10) {
 
@@ -101,10 +99,10 @@ void gps_publisher(std::string host) {
         obstacles->addObstacle(ob);
         obstacles->addObstacle(ob2);
 
-        send_message(connection, processor->encode_lines(*lines), headers.WLINES, exchange, key, false);
-        send_message(connection, processor->encode_obstacles(*obstacles), headers.WOBSTACLES, exchange, key, false);
+        send_message(connection, Processor::encode_lines(*lines), headers.WLINES, exchange, key);
+        send_message(connection, Processor::encode_obstacles(*obstacles), headers.WOBSTACLES, exchange, key);
         std::cout << _iterations << std::endl;
-        std::cout << processor->encode_lines(*lines);
+        std::cout << Processor::encode_lines(*lines);
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
         setMessage();
@@ -112,7 +110,7 @@ void gps_publisher(std::string host) {
     }
 
     std::string closing = "closing";
-    close_message(connection, closing, exchange, key, false);
+    close_message(connection, closing, exchange, key);
 }
 
 // Listen for incoming information like commands from Control or requests from other components
@@ -123,7 +121,7 @@ void gps_subscriber(std::string host) {
     std::string exchange = exchKeys.gps_exchange;
     std::string key = exchKeys.gps_key;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {

@@ -45,13 +45,10 @@ struct ev_loop* sub_loop = ev_loop_new();
 void gps_subscriber(std::string host) {
     MessageHeaders headers1;
 
-    Processor* processor = new Processor();
 
     std::string queue = exchKeys.mc_sub;
-    std::string exchange = exchKeys.nav_exchange;
-    std::string key = exchKeys.mc_key;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {
@@ -69,7 +66,7 @@ void gps_subscriber(std::string host) {
     };
 
     // Handle commands. Every time a message arrives this is called
-    auto messageCb = [chan, headers1, processor](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
+    auto messageCb = [chan, headers1](const AMQP::Message &message, uint64_t deliveryTag, bool redelivered) {
         std::cout << "Message Delivered" << std::endl;
 
         delivered++;
@@ -83,7 +80,7 @@ void gps_subscriber(std::string host) {
         std::string mess = message.message();
         std::cout << mess.c_str() << std::endl;
         if (header == headers.WCOMMANDS) {
-            Commands* commands = processor->decode_commands(mess);
+            Commands* commands = Processor::decode_commands(mess);
 
             for (auto iter = commands->commands->begin(); iter != commands->commands->end(); ++iter) {
                 Command* command = *iter;
@@ -108,7 +105,6 @@ void gps_subscriber(std::string host) {
         setup_consumer(chan, subscriber->getQueue(), kv.first, kv.second);
     }
 
-    setup_consumer(chan, subscriber->getQueue(), exchange, key);
     chan->consume(subscriber->getQueue()).onReceived(messageCb).onSuccess(startCb).onError(errorCb);    // Start consuming messages
 
     ev_run(sub_loop, 0);    // Run event loop ev_unloop(sub_loop) will kill the event loop
@@ -118,7 +114,8 @@ void gps_subscriber(std::string host) {
 int main() {
     std::string host = "amqp://localhost/";
 
-    exchange_keys.insert({exchKeys.gps_exchange,exchKeys.gps_key});
+    exchange_keys.insert({exchKeys.nav_exchange,exchKeys.mc_key});
+    exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});
     std::thread sub(gps_subscriber, host);
 //    std::thread pub(gps_publisher, host);
 

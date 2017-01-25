@@ -111,6 +111,7 @@ GPSMessage* getGPS() {
 }
 
 struct ev_loop* sub_loop = ev_loop_new();
+std::mutex start;
 
 /**
  * This is where all GPS computations will take place. Check data fields for changes on loop. If state of the
@@ -125,13 +126,12 @@ struct ev_loop* sub_loop = ev_loop_new();
 
 // Listen for incoming information like commands from Control or requests from other components
 void mc_subscriber(std::string host) {
+    start.lock();
     MessageHeaders headers1;
 
-    std::string queue = exchKeys.gps_sub;
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.gps_key;
+    std::string queue = exchKeys.mc_sub;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {
@@ -176,6 +176,8 @@ void mc_subscriber(std::string host) {
         } else if (header == headers1.WCLOSE) {
             setRunning(false);
             std::cout << "Supposed to close" << std::endl;
+        } else if (header == headers1.WSTART) {
+            start.unlock();
         }
     };
 
@@ -195,14 +197,17 @@ void mc_handler(std::string host) {
 
     AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
 
-    using MS = std::chrono::milliseconds;
 
     for (auto const& kv : exchKeys.declared) {
         setup_exchange(connection, kv.first, kv.second);
     }
 
+    start.lock();
+    start.unlock();
+
     while(getRunning()) {
 
+        std::cout << "Running" << std::endl;
 
         Commands* commands = getCommands(); // DO NOT CHANGE
         if ((commands != nullptr) && !getCommands()->isEmpty()) {   // DO NOT CHANGE
@@ -241,7 +246,11 @@ int main() {
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});
     exchange_keys.insert({exchKeys.nav_exchange, exchKeys.mc_key});
+
     std::thread sub(mc_subscriber, host);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
     std::thread pub(mc_handler, host);
 
     sub.join();

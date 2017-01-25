@@ -39,6 +39,7 @@ struct MessageHeaders {
     // UNICODE versions of headers
     std::string WGENERICNAME = u8"MESSAGE";
     std::string WCLOSE = u8"CLOSE";
+    std::string WSTART = u8"START";
     std::string WNAV = u8"NAV";
 
     std::string WSTATUS = u8"STATUS";
@@ -83,7 +84,8 @@ struct ExchKeys {
     std::string vision_sub = "vision_sub_queue";
 
     std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC},
-                                                  {control_exchange, TOPIC}, {nav_exchange, TOPIC}};
+                                                  {control_exchange, TOPIC}, {nav_exchange, TOPIC},
+                                                  {vision_exchange, TOPIC}};
 
 };
 
@@ -108,15 +110,13 @@ struct ExchKeys {
 
 class MQSub {
 public:
-    MQSub(struct ev_loop&, std::string& host, std::string& queue, std::string &exchange, std::string &routingKey);
+    MQSub(struct ev_loop&, std::string& host, std::string& queue);
     ~MQSub();
 
     AMQP::TcpChannel* getChannel();
     AMQP::TcpConnection* getConnection();
 
     std::string getQueue();
-    std::string getExchange();
-    std::string getKey();
 
 private:
     AMQP::LibEvHandler* handler;
@@ -125,8 +125,6 @@ private:
 
     std::string _host;
     std::string _queue;
-    std::string _exchange;
-    std::string _routingKey;
 
 };
 

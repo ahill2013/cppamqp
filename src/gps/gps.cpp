@@ -28,11 +28,13 @@ struct StatusPublish {
 
 struct Data {
     bool running = true;
+    bool started = false;
     double interval = 0.1;
 } _data;
 
 struct Mutexes {
     std::mutex running;
+    std::mutex started;
     std::mutex interval;
 } _mutexes;
 
@@ -51,6 +53,20 @@ bool getRunning() {
     return running;
 }
 
+void setStarted(bool value) {
+    _mutexes.started.lock();
+    _data.started = value;
+    _mutexes.started.unlock();
+}
+
+
+bool getStarted() {
+    _mutexes.started.lock();
+    bool started = _data.started;
+    _mutexes.started.unlock();
+    return started;
+}
+
 
 void setInterval(double interval) {
     _mutexes.interval.lock();
@@ -66,6 +82,7 @@ double getInterval() {
 }
 
 struct ev_loop* sub_loop = ev_loop_new();
+std::mutex start;
 
 
 /**
@@ -86,6 +103,8 @@ void gps_publisher(std::string host) {
 
     int _iterations = 0;
 
+    start.lock();
+    start.unlock();
 
 
     // Turn this into a while(true) loop to keep posting messages
@@ -94,26 +113,28 @@ void gps_publisher(std::string host) {
         auto start = std::chrono::high_resolution_clock::now();
 
         // Get gps message here and convert JSON -> GPSMessage -> std::string
-        std::string message ="{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
+        std::string message = "{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
                 "\"tow\": 478500, \"crc\": 54878, \"length\": 11, \"flags\": 0, \"ns\": 0, \"preamble\": 85, "
                 "\"payload\": \"+wYkTQcAAAAAAAA=\", \"lon\": -122.17203108848562, \"lat\": 37.430193934253346},"
                 " \"time\": \"2016-10-13T21:49:54.208732\"}";
 
         Document d;
         d.Parse(message.c_str());
-        GPSMessage* gpsMessage = new GPSMessage(d, false);
+        GPSMessage *gpsMessage = new GPSMessage(d, false);
         send_message(connection, Processor::encode_gps(*gpsMessage), gpsInfo.header, gpsInfo.exchange, gpsInfo.key);
         std::cout << _iterations << std::endl;
 
         if (_iterations % status == 0) {
-            Status* status = new Status(exchKeys.gps_exchange, getRunning(), "normal");
+            Status *status = new Status(exchKeys.gps_exchange, getRunning(), "normal");
             std::string status_mess = Processor::encode_status(*status);
             send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
 //            _iterations = 0;
         }
 
+        std::chrono::duration<double> interval(getInterval());
+
         auto end = std::chrono::high_resolution_clock::now();
-        std::this_thread::sleep_for(end - start);
+        std::this_thread::sleep_for(interval - (end - start));
     }
 
     std::string closing = "closing";
@@ -122,13 +143,12 @@ void gps_publisher(std::string host) {
 
 // Listen for incoming information like commands from Control or requests from other components
 void gps_subscriber(std::string host) {
+    start.lock();
     MessageHeaders headers1;
 
     std::string queue = exchKeys.gps_sub;
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.gps_key;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {
@@ -169,6 +189,8 @@ void gps_subscriber(std::string host) {
         } else if (header == headers1.WCLOSE) {
             setRunning(false);
             std::cout << "Supposed to close" << std::endl;
+        } else if (header == headers1.WSTART) {
+            start.unlock();
         }
     };
 
@@ -189,7 +211,11 @@ int main() {
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.gps_key});
+
     std::thread sub(gps_subscriber, host);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
     std::thread pub(gps_publisher, host);
 
     sub.join();

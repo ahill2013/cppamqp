@@ -63,8 +63,6 @@ void gps_publisher(std::string host) {
 
     int _iterations = 0;
 
-    Processor* processor = new Processor();
-
     // Turn this into a while(true) loop to keep posting messages
     while (_iterations < 10) {
 
@@ -77,7 +75,7 @@ void gps_publisher(std::string host) {
 
 
         GPSMessage* gpsMessage = new GPSMessage(jsonDoc, false);
-        send_message(connection, processor->encode_gps(*gpsMessage), headers.WGPSFRAME, exchange, key, false);
+        send_message(connection, Processor::encode_gps(*gpsMessage), headers.WGPSFRAME, exchange, key);
         std::cout << _iterations << std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -86,7 +84,7 @@ void gps_publisher(std::string host) {
     }
 
     std::string closing = "closing";
-    close_message(connection, closing, exchange, key, false);
+    close_message(connection, closing, exchange, key);
 }
 
 // Listen for incoming information like commands from Control or requests from other components
@@ -94,10 +92,8 @@ void gps_subscriber(std::string host) {
     MessageHeaders headers1;
 
     std::string queue = exchKeys.gps_sub;
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.gps_key;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {

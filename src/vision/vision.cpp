@@ -7,18 +7,18 @@ ExchKeys exchKeys;
 
 // Real GPS code
 
-// Report status every thirty publishes
-int status = 30;
+// Report status every ten publishes
+int status = 10;
 std::map<std::string, std::string> exchange_keys;
 
 struct LinesPublishInfo {
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.gps_key;
-    std::string header = headers.WGPSFRAME;
+    std::string exchange = exchKeys.vision_exchange;
+    std::string key = exchKeys.nav_key;
+    std::string header = headers.WLINES;
 } linesInfo;
 
 struct StatusPublish {
-    std::string exchange = exchKeys.gps_exchange;
+    std::string exchange = exchKeys.vision_exchange;
     std::string key = exchKeys.control_key;
     std::string header = headers.WSTATUS;
 } statusInfo;
@@ -28,7 +28,7 @@ struct StatusPublish {
 
 struct Data {
     bool running = true;
-    double interval = 0.1;
+    double interval = 0.25;
     GPSMessage* gpsMessage;
 } _data;
 
@@ -62,11 +62,10 @@ void setGPS(GPSMessage* gpsMessage) {
 
     _data.gpsMessage = gpsMessage;
 
-    setUpdate();
     _mutexes.gps.unlock();
 }
 
-void getGPS() {
+GPSMessage* getGPS() {
     _mutexes.gps.lock();
     GPSMessage* gpsMessage = _data.gpsMessage;
     _mutexes.gps.unlock();
@@ -87,63 +86,68 @@ double getInterval() {
 }
 
 struct ev_loop* sub_loop = ev_loop_new();
+std::mutex start;
 
 
-///**
-// * This is where all GPS computations will take place. Check data fields for changes on loop. If state of the
-// * robot has changed respond accordingly.
-// *
-// * Set up a loop to publish the location, acceleration, velocity, etc. once every tenth of a second.
-// * TODO: Periodically send a status update to the Control unit
-// * @param host string name of the host with the ip:port number as necessary
-// */
-//void mc_publisher(std::string host) {
-//    std::string exchange = exchKeys.gps_exchange;
-//    std::string key = exchKeys.gps_key;
-//
-//    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
-//
-//    for (auto const& kv : exchKeys.declared) {
-//        setup_exchange(connection, kv.first, kv.second);
-//    }
-//
-//    int _iterations = 0;
-//
-//
-//    // Turn this into a while(true) loop to keep posting messages
-//    while (getRunning() && _iterations < 20) {
-//        _iterations++;
-//        auto start = std::chrono::high_resolution_clock::now();
-//
-//        // Get gps message here and convert JSON -> GPSMessage -> std::string
-//        std::string message = "my_message";
-//        send_message(connection, message, gpsInfo.header, gpsInfo.exchange, gpsInfo.key, false);
-//        std::cout << _iterations << std::endl;
-//
-//        if (_iterations % status == 0) {
-//            Status* status = new Status(exchKeys.gps_exchange, getRunning(), "normal");
-//            std::string status_mess = Processor::encode_status(*status);
-//            send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key, false);
-//            _iterations = 0;
-//        }
-//
-//        auto end = std::chrono::high_resolution_clock::now();
-//        std::this_thread::sleep_for(end - start);
-//    }
-//
-//    std::string closing = "closing";
-//    close_message(connection, closing, exchange, key, false);
-//}
-
-// Listen for incoming information like commands from Control or requests from other components
-void vis_subscriber(std::string host) {
-    MessageHeaders headers1;
-
-    std::string queue = exchKeys.gps_sub;
+/**
+ * This is where all Vision computations will take place. Check data fields for changes on loop. If state of the
+ * robot has changed respond accordingly.
+ *
+ * Set up a loop to publish the location, acceleration, velocity, etc. once every tenth of a second.
+ * TODO: Periodically send a status update to the Control unit
+ * @param host string name of the host with the ip:port number as necessary
+ */
+void vis_publisher(std::string host) {
     std::string exchange = exchKeys.gps_exchange;
     std::string key = exchKeys.gps_key;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue, exchange, key);
+    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
+
+    for (auto const& kv : exchKeys.declared) {
+        setup_exchange(connection, kv.first, kv.second);
+    }
+
+    int _iterations = 0;
+
+    start.lock();
+    start.unlock();
+
+
+    // Turn this into a while(true) loop to keep posting messages
+    while (getRunning() && _iterations < 20) {
+        _iterations++;
+        auto start = std::chrono::high_resolution_clock::now();
+
+        // Get gps message here and convert JSON -> GPSMessage -> std::string
+        std::string message = "my_message";
+        send_message(connection, message, linesInfo.header, linesInfo.exchange, linesInfo.key);
+        std::cout << _iterations << std::endl;
+
+        if (_iterations % status == 0) {
+            Status* status = new Status(exchKeys.vision_exchange, getRunning(), "normal");
+            std::string status_mess = Processor::encode_status(*status);
+            send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
+            _iterations = 0;
+        }
+
+        std::chrono::duration<double> interval(getInterval());
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::this_thread::sleep_for(interval - (end - start));
+    }
+
+    std::string closing = "closing";
+    close_message(connection, closing, exchange, key);
+}
+
+// Listen for incoming information like commands from Control or requests from other components
+void vis_subscriber(std::string host) {
+    start.lock();
+    MessageHeaders headers1;
+
+    std::string queue = exchKeys.vision_sub;
+
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {
@@ -172,7 +176,7 @@ void vis_subscriber(std::string host) {
 //        std::cout << getMessage() << std::endl;
 //        setMessage();
         if (header == headers1.WGPSFRAME) {
-            GPSMessage* gpsMessage = Processor::decode_gps(message.message());
+            GPSMessage* gpsMessage = Processor::decode_gps(message.message(), true);
             setGPS(gpsMessage);
             std::cout << "decode_gps" << std::endl;
         } else if (header == headers1.WINTERVAL) {
@@ -181,6 +185,8 @@ void vis_subscriber(std::string host) {
         } else if (header == headers1.WCLOSE) {
             setRunning(false);
             std::cout << "Supposed to close" << std::endl;
+        } else if (header == headers1.WSTART) {
+            start.unlock();
         }
     };
 
@@ -201,8 +207,13 @@ int main() {
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.vision_key});
-    std::thread sub(gps_subscriber, host);
-    std::thread pub(gps_publisher, host);
+    exchange_keys.insert({exchKeys.nav_exchange, exchKeys.vision_key});
+
+    std::thread sub(vis_subscriber, host);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    std::thread pub(vis_publisher, host);
 
     sub.join();
     pub.join();

@@ -63,7 +63,7 @@ int main() {
 
 
 
-    long time = 1000000001;
+    long time = 100010001000001;
     Lines* lines = new Lines(10, 10, time);
     Obstacles* obstacles = new Obstacles(-10, -10, time);
 

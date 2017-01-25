@@ -49,15 +49,13 @@ void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::str
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-MQSub::MQSub(struct ev_loop& loop, std::string& host, std::string &queue, std::string &exchange, std::string &routingKey) { // : handler(&loop) {
+MQSub::MQSub(struct ev_loop& loop, std::string& host, std::string &queue) { // : handler(&loop) {
     handler = new AMQP::LibEvHandler(&loop);
     conn = new AMQP::TcpConnection(handler, AMQP::Address(host));
     chan = new AMQP::TcpChannel(conn);
 
     _host = host;
     _queue = queue;
-    _exchange = exchange;
-    _routingKey = routingKey;
 
 }
 
@@ -79,12 +77,4 @@ AMQP::TcpConnection* MQSub::getConnection() {
 
 std::string MQSub::getQueue() {
     return _queue;
-}
-
-std::string MQSub::getExchange() {
-    return _exchange;
-}
-
-std::string MQSub::getKey() {
-    return _routingKey;
 }

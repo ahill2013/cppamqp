@@ -1,8 +1,10 @@
 TEST=src/test/proctest.o mq.o processor.o
-MCTEST=src/mc/mc.o mq.o processor.o
+MC=src/mc/mc.o mq.o processor.o
+VISION=src/vision/vision.o mq.o processor.o
 VISTEST=src/test/visual_test.o mq.o processor.o
+NAVTEST=src/test/nav.o mq.o processor.o
 COMTEST=src/test/command_test.o mq.o processor.o
-GOBJ= src/gps/gps.o mq.o processor.o
+GPS= src/gps/gps.o mq.o processor.o
 GOBJS= src/gps/gps2.o mq.o processor.o
 JTEST= jsontest.o mq.o
 CC=g++
@@ -15,17 +17,23 @@ all: gps test
 test: $(TEST)
 	$(CC) $(CXXFLAGS) $(TEST) -o bin/test $(LDLIBS)
 
-vis: $(VISTEST)
+vistest: $(VISTEST)
 	$(CC) $(CXXFLAGS) $(VISTEST) -o bin/vis_test $(LDLIBS)
 
-com: $(COMTEST)
+navtest: $(NAVTEST)
+	$(CC) $(CXXFLAGS) $(NAVTEST) -o bin/nav_test $(LDLIBS)
+
+comtest: $(COMTEST)
 	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
 
-mc: $(MCTEST)
-	$(CC) $(CXXFLAGS) $(MCTEST) -o bin/mc $(LDLIBS)
+mc: $(MC)
+	$(CC) $(CXXFLAGS) $(MC) -o bin/mc $(LDLIBS)
 
-gps: $(GOBJ)
-	$(CC) $(CXXFLAGS) $(GOBJ) -o bin/gps $(LDLIBS)
+gps: $(GPS)
+	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps $(LDLIBS)
+
+vision: $(VISION)
+	$(CC) $(CXXFLAGS) $(VISION) -o bin/vision $(LDLIBS)
 
 gpss: $(GOBJS)
 	$(CC) $(CXXFLAGS) $(GOBJS) -o bin/gps2 $(LDLIBS)
