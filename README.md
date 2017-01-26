@@ -33,3 +33,5 @@ SimpleAmqpClient:
             sudo cmake --build . --target install
 
     Run sudo ldconfig 
+
+    Install AMQP-CPP by downloading it from the repo and running their install commands
