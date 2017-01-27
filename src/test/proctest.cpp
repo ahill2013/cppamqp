@@ -6,6 +6,8 @@
 #include "../../include/processor.h"
 #include <stdio.h>
 
+using namespace rapidjson;
+
 int main() {
     std::string demo_mess = "In this demo we will receive a message from some source and place it into a Document."
             "After placing the message into a document we shall decode it into a GPSMessage, which we will use. Then we"

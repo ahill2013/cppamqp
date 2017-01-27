@@ -12,7 +12,7 @@
 #include "../lib/rapidjson/stringbuffer.h"
 #include "../lib/rapidjson/pointer.h"
 
-using namespace rapidjson;
+//using namespace rapidjson;
 
 class GPSMessage {
 public:
@@ -25,9 +25,9 @@ public:
     std::string time;
     bool ins;
 
-    void Serialize(Writer<StringBuffer>& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
-    GPSMessage(Document& d, bool);
+    GPSMessage(rapidjson::Document& d, bool);
     ~GPSMessage();
 };
 
@@ -35,7 +35,7 @@ class Interval {
 public:
     double interval;
 
-    Interval(Document& d);
+    Interval(rapidjson::Document& d);
     ~Interval();
 };
 
@@ -62,7 +62,7 @@ public:
     unsigned long time;
     std::vector<Obstacle>* obstacles;
 
-    void Serialize(Writer<StringBuffer>& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     void addObstacle(Obstacle&);
 
@@ -78,7 +78,7 @@ public:
     unsigned long time;
     std::vector<Line>* lines;
 
-    void Serialize(Writer<StringBuffer>& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     void addLine(Line&);
 
@@ -97,7 +97,7 @@ public:
 
     unsigned int duration;
 
-    Command(const Value& val);
+    Command(const rapidjson::Value& val);
     ~Command();
 };
 
@@ -108,7 +108,7 @@ public:
 
     std::deque<Command*>* commands;
 
-    Commands(Document& d);
+    Commands(rapidjson::Document& d);
 
     Command* remove();
     bool isEmpty();
@@ -122,10 +122,10 @@ public:
     bool running;
     std::string message;
 
-    void Serialize(Writer<StringBuffer>& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     Status(std::string, bool status, std::string);
-    Status(Document&);
+    Status(rapidjson::Document&);
     ~Status();
 };
 
@@ -140,10 +140,10 @@ public:
     std::vector<double>* getLeft();
     std::vector<double>* getRight();
 
-    void Serialize(Writer<StringBuffer>& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     MotorBroadcast(unsigned long);
-    MotorBroadcast(Document &d);
+    MotorBroadcast(rapidjson::Document &d);
     ~MotorBroadcast();
 private:
     std::vector<double>* left;
@@ -156,71 +156,71 @@ private:
 namespace Processor {
 
     static std::string encode_gps(GPSMessage &to_encode) {
-        StringBuffer buffer;
-        Writer<StringBuffer> writer(buffer);
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 
         to_encode.Serialize(writer);
         return buffer.GetString();
     }
 
     static GPSMessage *decode_gps(std::string to_decode, bool preprocessed) {
-        Document d;
+        rapidjson::Document d;
         d.Parse(to_decode.c_str());
         return new GPSMessage(d, preprocessed);
     }
 
     static Interval *decode_interval(std::string to_decode) {
-        Document d;
+        rapidjson::Document d;
         d.Parse(to_decode.c_str());
         return new Interval(d);
     }
 
     static std::string encode_lines(Lines &to_encode) {
-        StringBuffer buffer;
-        Writer<StringBuffer> writer(buffer);
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 
         to_encode.Serialize(writer);
         return buffer.GetString();
     }
 
     static std::string encode_obstacles(Obstacles &to_encode) {
-        StringBuffer buffer;
-        Writer<StringBuffer> writer(buffer);
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 
         to_encode.Serialize(writer);
         return buffer.GetString();
     }
 
     static Commands *decode_commands(std::string to_decode) {
-        Document d;
+        rapidjson::Document d;
         d.Parse(to_decode.c_str());
         return new Commands(d);
     }
 
     static std::string encode_status(Status &to_encode) {
-        StringBuffer buffer;
-        Writer<StringBuffer> writer(buffer);
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 
         to_encode.Serialize(writer);
         return buffer.GetString();
     }
 
     static Status* decode_status(std::string to_decode) {
-        Document d;
+        rapidjson::Document d;
         d.Parse(to_decode.c_str());
         return new Status(d);
     }
 
     static std::string encode_motorbroad(MotorBroadcast &to_encode) {
-        StringBuffer buffer;
-        Writer<StringBuffer> writer(buffer);
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
 
         to_encode.Serialize(writer);
         return buffer.GetString();
     }
 
     static MotorBroadcast *decode_motorbroad(std::string to_decode) {
-        Document d;
+        rapidjson::Document d;
         d.Parse(to_decode.c_str());
         return new MotorBroadcast(d);
     }

@@ -2,6 +2,8 @@
 #include "../../include/processor.h"
 #include <stdio.h>
 
+using namespace rapidjson;
+
 MessageHeaders headers;
 ExchKeys exchKeys;
 

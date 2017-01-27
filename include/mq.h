@@ -4,7 +4,6 @@
 
 #ifndef AMQPTRIAL_MQ_H
 #define AMQPTRIAL_MQ_H
-
 #include <amqpcpp.h>
 #include <amqpcpp/libev.h>
 #include "SimpleAmqpClient/SimpleAmqpClient.h"

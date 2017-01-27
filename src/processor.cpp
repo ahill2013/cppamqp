@@ -5,6 +5,8 @@
 #include "../include/processor.h"
 #include "iostream"
 
+using namespace rapidjson;
+
 // Simple writer
 void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.StartObject();
