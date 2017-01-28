@@ -11,7 +11,7 @@
 #include "../lib/rapidjson/writer.h"
 #include "../lib/rapidjson/stringbuffer.h"
 #include "../lib/rapidjson/pointer.h"
-
+#include <stdint.h>
 //using namespace rapidjson;
 
 class GPSMessage {
@@ -59,14 +59,14 @@ class Obstacles {
 public:
     double lat;
     double lon;
-    unsigned long time;
+    uint64_t time;
     std::vector<Obstacle>* obstacles;
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     void addObstacle(Obstacle&);
 
-    Obstacles(double lat, double lon, unsigned long time);
+    Obstacles(double lat, double lon, uint64_t time);
     ~Obstacles();
 };
 
@@ -75,14 +75,14 @@ class Lines {
 public:
     double lat;
     double lon;
-    unsigned long time;
+    uint64_t time;
     std::vector<Line>* lines;
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     void addLine(Line&);
 
-    Lines(double lat, double lon, unsigned long time);
+    Lines(double lat, double lon, uint64_t time);
     ~Lines();
 };
 
@@ -131,7 +131,7 @@ public:
 
 class MotorBroadcast {
 public:
-    unsigned long time;
+    uint64_t time;
 
 
     void addLeft(double);
@@ -142,7 +142,7 @@ public:
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
-    MotorBroadcast(unsigned long);
+    MotorBroadcast(uint64_t);
     MotorBroadcast(rapidjson::Document &d);
     ~MotorBroadcast();
 private:

@@ -47,14 +47,11 @@ jsontest: $(JTEST)
 vision.o: src/vision/vision.cpp
 	$(CC) $(CXXFLAGS) $(VISINC) -c src/vision/vision.cpp
 
-#include/mq.h
-mq.o: src/mq.cpp 
-	$(CC) $(CXXFLAGS) -c src/mq.cpp $(LDLIBS)
+mq.o: src/mq.cpp include/mq.h
+	$(CC) $(CXXFLAGS) -c src/mq.cpp
 
-#include/processor.h
-
-processor.o: src/processor.cpp
-	$(CC) $(CXXFLAGS) -c src/processor.cpp $(LDLIBS)
+processor.o: src/processor.cpp include/processor.h
+	$(CC) $(CXXFLAGS) -c src/processor.cpp
 
 clean:
 	rm -f src/*.o src/mc/*.o src/gps/*.o src/test/*.o *.o bin/pub bin/gps bin/test bin/gps2

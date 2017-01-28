@@ -316,8 +316,8 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
     int _iterations = 0;
 
-    start.lock();
-    start.unlock();
+//    start.lock();
+//    start.unlock();
 
     // Turn this into a while(true) loop to keep posting messages
     while (getRunning() && _iterations < 20) {
@@ -382,7 +382,7 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
 // Listen for incoming information like commands from Control or requests from other components
 void vis_subscriber(std::string host) {
-    start.lock();
+//    start.lock();
     MessageHeaders headers1;
 
     std::string queue = exchKeys.vision_sub;
@@ -426,7 +426,7 @@ void vis_subscriber(std::string host) {
             setRunning(false);
             std::cout << "Supposed to close" << std::endl;
         } else if (header == headers1.WSTART) {
-            start.unlock();
+//            start.unlock();
         }
     };
 

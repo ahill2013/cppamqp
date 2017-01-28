@@ -50,7 +50,7 @@ Interval::~Interval() = default;
 ////////////////////////////////////////////////////////////////////////
 
 
-Lines::Lines(double lat, double lon, unsigned long time) {
+Lines::Lines(double lat, double lon, uint64_t time) {
     this->lat = lat;
     this->lon = lon;
     this->time = time;
@@ -68,6 +68,14 @@ void Lines::Serialize(Writer<StringBuffer> &writer) const {
 
     Value linesArray(kArrayType);
 
+    Value latValue;
+    latValue.SetDouble(lat);
+
+    Value lonValue;
+    lonValue.SetDouble(lon);
+
+    Value timeValue;
+    timeValue.SetUint64(time);
 
     for (Line& line : *lines) {
         Value lineVal;
@@ -79,9 +87,9 @@ void Lines::Serialize(Writer<StringBuffer> &writer) const {
         linesArray.PushBack(lineVal, allocator);
     }
 
-    jsonDoc.AddMember("lat", lat, allocator);
-    jsonDoc.AddMember("lon", lon, allocator);
-    jsonDoc.AddMember("time", time, allocator);
+    jsonDoc.AddMember("lat", latValue, allocator);
+    jsonDoc.AddMember("lon", lonValue, allocator);
+    jsonDoc.AddMember("time", timeValue, allocator);
     jsonDoc.AddMember("lines", linesArray, allocator);
 
     jsonDoc.Accept(writer);
@@ -92,7 +100,7 @@ Lines::~Lines() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
-Obstacles::Obstacles(double lat, double lon, unsigned long time) {
+Obstacles::Obstacles(double lat, double lon, uint64_t time) {
     this->lat = lat;
     this->lon = lon;
     this->time = time;
@@ -106,6 +114,15 @@ void Obstacles::Serialize(Writer<StringBuffer> &writer) const {
 
     Value obsArray(kArrayType);
 
+    Value latValue;
+    latValue.SetDouble(lat);
+
+    Value lonValue;
+    lonValue.SetDouble(lon);
+
+    Value timeValue;
+    timeValue.SetUint64(time);
+
     for (Obstacle& obstacle : *obstacles) {
         Value obsVal;
         obsVal.SetObject();
@@ -116,9 +133,9 @@ void Obstacles::Serialize(Writer<StringBuffer> &writer) const {
         obsArray.PushBack(obsVal, allocator);
     }
 
-    jsonDoc.AddMember("lat", lat, allocator);
-    jsonDoc.AddMember("lon", lon, allocator);
-    jsonDoc.AddMember("time", time, allocator);
+    jsonDoc.AddMember("lat", latValue, allocator);
+    jsonDoc.AddMember("lon", lonValue, allocator);
+    jsonDoc.AddMember("time", timeValue, allocator);
     jsonDoc.AddMember("obstacles", obsArray, allocator);
 
     jsonDoc.Accept(writer);
@@ -219,7 +236,7 @@ Status::~Status() = default;
 
 
 /////////////////////////////////////////////////////////////////////////
-MotorBroadcast::MotorBroadcast(unsigned long t) {
+MotorBroadcast::MotorBroadcast(uint64_t t) {
     time = t;
     left = new std::vector<double>();
     right = new std::vector<double>();
@@ -271,6 +288,9 @@ void MotorBroadcast::Serialize(Writer<StringBuffer> &writer) const {
     Value leftArray(kArrayType);
     Value rightArray(kArrayType);
 
+    Value timeValue;
+    timeValue.SetUint64(time);
+
     for (std::vector<double>::iterator it = left->begin(); it != left->end(); ++it) {
         Value encoder_val;
         encoder_val.SetDouble(*it);
@@ -283,7 +303,7 @@ void MotorBroadcast::Serialize(Writer<StringBuffer> &writer) const {
         rightArray.PushBack(encoder_val, allocator);
     }
 
-    jsonDoc.AddMember("time", time, allocator);
+    jsonDoc.AddMember("time", timeValue, allocator);
     jsonDoc.AddMember("left", leftArray, allocator);
     jsonDoc.AddMember("right", rightArray, allocator);
 
