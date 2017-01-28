@@ -1,10 +1,21 @@
 #include "../../include/mq.h"
 #include "../../include/processor.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <sys/time.h>
 #include <sys/types.h>
+
+#include <stdio.h>     //libraries needed for UART
 #include <unistd.h>
+#include <fcntl.h>
+#include <iostream>
+#include <termios.h>
+#include <wiringPi.h>
+#include <stdlib.h>
+#include <errno.h>
+
+
+#define  SYNC     27
+#define  SYNC2	  17
+#define  SYNC3   22
 
 MessageHeaders headers;
 ExchKeys exchKeys;
@@ -32,7 +43,8 @@ struct StatusPublish {
 
 struct Data {
     bool running = true;
-    Commands* command;
+    Command* command;
+    Commands* commands;
     GPSMessage* gpsMessage;
     bool updateGPS;
 } _data;
@@ -74,6 +86,7 @@ void setCommands(Commands* commands) {
 Commands* getCommands() {
     _mutexes.commands.lock();
     Commands* commands = _data.command;
+    _mutexes.commands.unlock();
     return commands;
 }
 
@@ -109,6 +122,62 @@ GPSMessage* getGPS() {
     _mutexes.gps.unlock();
     return gpsMessage;
 }
+
+void interupt1(void ){
+
+    _mutexes.commands.lock();
+
+    Command* toSend = _data.commands->remove();
+
+    if (command == nullptr) {
+        toSend = _data.command;
+    }
+
+    _mutexes.commmands.unlock();
+
+    int uart0_filestream;
+    uart0_filestream = open("/dev/serial0", O_RDWR  | O_NOCTTY | O_NDELAY);
+    char *  p_tx_buffer;
+    char tx_buffer[20];
+    char converted[50];
+    double n = sprintf(converted, "%.2f %.2f",toSend->linvel,toSend->angvel);
+    p_tx_buffer=&tx_buffer[0];
+    cout<<"sending"<<endl;
+    if (uart0_filestream == -1){
+        cout<<"Error - Unable to open Uart. Ensure it is not in use by another application and that it is \n"<<endl;
+    }
+
+    //bellow I am setting up the UART Parameters
+    struct termios options;
+    tcgetattr(uart0_filestream, &options);
+    options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
+    options.c_iflag = IGNPAR;
+    options.c_oflag = 0;
+    options.c_lflag = 0;
+    tcflush(uart0_filestream, TCIFLUSH);
+    tcsetattr(uart0_filestream, TCSANOW, &options);
+    *p_tx_buffer++=converted[0];
+    *p_tx_buffer++=converted[1];
+    *p_tx_buffer++=converted[2];
+    *p_tx_buffer++=converted[3];
+    *p_tx_buffer++=converted[4];
+    *p_tx_buffer++=converted[5];
+    *p_tx_buffer++=converted[6];
+    *p_tx_buffer++=converted[7];
+    *p_tx_buffer++=converted[8];
+    *p_tx_buffer++=converted[9];
+    *p_tx_buffer++=converted[10];
+    if(uart0_filestream !=-1){
+        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer- &tx_buffer[0]));
+        //cout<<count<<endl;
+        if(count<0){
+            cout<<"UART TX error"<<endl;
+        }
+    }
+
+
+}
+
 
 struct ev_loop* sub_loop = ev_loop_new();
 std::mutex start;
@@ -205,42 +274,33 @@ void mc_handler(std::string host) {
     start.lock();
     start.unlock();
 
-    while(getRunning()) {
+    int uart0_filestream =-1;
+//	unsigned char * c=data;//here I was testing the code from char to integer
+//	int dataI[6]={3,3,3,3,3,3};
+//	double * p=dataI;  Here I was testing the code from char to integer
+//	chartoint(p,c);
+    wiringPiSetupGpio ();  //This lets us use broad com pin numberings to set pin values
+    pinMode (SYNC,INPUT);
+    pinMode (SYNC2,OUTPUT);
+    pinMode (SYNC3,INPUT);
+    digitalWrite(SYNC2,LOW);
+    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
 
-        std::cout << "Running" << std::endl;
+    while(getRunning()){
+        std::this_thread::sleep_for(1000);
 
-        Commands* commands = getCommands(); // DO NOT CHANGE
-        if ((commands != nullptr) && !getCommands()->isEmpty()) {   // DO NOT CHANGE
-            Command* to_send = commands->remove();  // DO NOT CHANGE
-            _mutexes.commands.unlock();     // DO NOT CHANGE
-
-            // put code to send command here
-        } else {
-            _mutexes.commands.unlock();     // DO NOT CHANGE
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));  // DO NOT CHANGE
-        }
-
-//        while(!getCommands()->isEmpty()) {
-//            // Send information to MyRio
-//            Commands* comm = getCommands();
-//            Command* to_send = comm->remove();
-//            // send command
-//
-//            // Get Response with select() or ioctl() or non-canonical termios reads
-//
-//            // If less than equal to zero error or timeout
-//            int retval = select();
-//
-//            if (retval > 0) {
-//
-//            }
-//        }
+        std::cout << "Motor control running" << std::endl;
+//        Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
+//        std::string status_mess = Processor::encode_status(*status);
+//        send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
     }
 
 }
 
 
 int main() {
+
+    _data.command = new Command(0.5, 0, 0, 0, 0, 1);
     std::string host = "amqp://localhost/";
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});

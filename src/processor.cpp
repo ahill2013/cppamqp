@@ -160,6 +160,15 @@ Command::Command(const Value& val) {
 
 }
 
+Command::Command(double linvel, double angvel, double startang, double endlat, double endlon, double duration) {
+    this->linvel = linvel;
+    this->angvel = angvel;
+    this->startang = startang;
+    this->endLat = endLat;
+    this->endLon = endLon;
+    this->duration = duration;
+}
+
 Command::~Command() = default;
 
 Commands::Commands(Document &d) {
@@ -186,6 +195,11 @@ bool Commands::isEmpty() {
 }
 
 Command* Commands::remove() {
+
+    if (commands->size() == 0) {
+        return nullptr;
+    }
+
     Command* command = commands->front();
     commands->pop_front();
     return command;

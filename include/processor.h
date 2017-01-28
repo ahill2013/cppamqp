@@ -97,6 +97,7 @@ public:
 
     unsigned int duration;
 
+    Command(double linvel, double angvel, double startang, double endlat, double endlon, double duration);
     Command(const rapidjson::Value& val);
     ~Command();
 };
