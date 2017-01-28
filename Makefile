@@ -54,4 +54,4 @@ processor.o: src/processor.cpp include/processor.h
 	$(CC) $(CXXFLAGS) -c src/processor.cpp
 
 clean:
-	rm -f src/*.o src/mc/*.o src/gps/*.o src/test/*.o *.o bin/pub bin/gps bin/test bin/gps2
+	rm -f src/*.o src/mc/*.o src/gps/*.o src/test/*.o *.o bin/*
