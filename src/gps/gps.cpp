@@ -97,7 +97,7 @@ std::mutex start;
  */
 void gps_publisher(std::string host) {
 
-    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
+    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("amqp://192.68.11.2:15674");
 
     for (auto const& kv : exchKeys.declared) {
         setup_exchange(connection, kv.first, kv.second);
@@ -148,11 +148,13 @@ void gps_subscriber(std::string host) {
     start.lock();
     MessageHeaders headers1;
 
+    std::cout << "Working queue" << std::endl;
     std::string queue = exchKeys.gps_sub;
 
     MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
+    std::cout << "Working doing setup" << std::endl;
     for (auto const& kv : exchKeys.declared) {
         setup_cop_exchange(chan, kv.first, kv.second);
     }
@@ -204,12 +206,14 @@ void gps_subscriber(std::string host) {
     }
     chan->consume(subscriber->getQueue()).onReceived(messageCb).onSuccess(startCb).onError(errorCb);    // Start consuming messages
 
+    std::cout << "Working" << std::endl;
+
     ev_run(sub_loop, 0);    // Run event loop ev_unloop(sub_loop) will kill the event loop
 
 }
 
 int main() {
-    std::string host = "amqp://localhost/";
+    std::string host = "amqp://192.168.11.2/";
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.gps_key});

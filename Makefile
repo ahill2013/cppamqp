@@ -13,7 +13,7 @@ JTEST= jsontest.o mq.o
 CC=g++
 DEBUG=-g -O0
 CXXFLAGS=-Wall $(DEBUG) -std=c++11
-LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq
+LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq -lwiringPi
 
 all: gps test vision
 

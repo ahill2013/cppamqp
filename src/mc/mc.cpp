@@ -75,17 +75,17 @@ bool getRunning() {
 void setCommands(Commands* commands) {
     _mutexes.commands.lock();
 
-    if (_data.command != nullptr) {
-        delete _data.command;
+    if (_data.commands != nullptr) {
+        delete _data.commands;
     }
 
-    _data.command = commands;
+    _data.commands = commands;
     _mutexes.commands.unlock();
 }
 
 Commands* getCommands() {
     _mutexes.commands.lock();
-    Commands* commands = _data.command;
+    Commands* commands = _data.commands;
     _mutexes.commands.unlock();
     return commands;
 }
@@ -123,28 +123,34 @@ GPSMessage* getGPS() {
     return gpsMessage;
 }
 
-void interupt1(void ){
+void interupt1(){
+
+    std::cout << "Attempting to Send" << std::endl;
 
     _mutexes.commands.lock();
 
     Command* toSend = _data.commands->remove();
 
-    if (command == nullptr) {
+    if (toSend == nullptr) {
         toSend = _data.command;
     }
 
-    _mutexes.commmands.unlock();
+    _mutexes.commands.unlock();
 
     int uart0_filestream;
     uart0_filestream = open("/dev/serial0", O_RDWR  | O_NOCTTY | O_NDELAY);
     char *  p_tx_buffer;
     char tx_buffer[20];
     char converted[50];
+
+    std::cout << toSend->linvel << std::endl;
+    std::cout << toSend->angvel << std::endl;
+
     double n = sprintf(converted, "%.2f %.2f",toSend->linvel,toSend->angvel);
     p_tx_buffer=&tx_buffer[0];
-    cout<<"sending"<<endl;
+    std::cout<<"sending"<< std::endl;
     if (uart0_filestream == -1){
-        cout<<"Error - Unable to open Uart. Ensure it is not in use by another application and that it is \n"<<endl;
+        std::cout <<"Error - Unable to open Uart. Ensure it is not in use by another application and that it is \n"<< std::endl;
     }
 
     //bellow I am setting up the UART Parameters
@@ -171,7 +177,7 @@ void interupt1(void ){
         int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer- &tx_buffer[0]));
         //cout<<count<<endl;
         if(count<0){
-            cout<<"UART TX error"<<endl;
+            std::cout <<"UART TX error"<< std::endl;
         }
     }
 
@@ -195,7 +201,7 @@ std::mutex start;
 
 // Listen for incoming information like commands from Control or requests from other components
 void mc_subscriber(std::string host) {
-    start.lock();
+//    start.lock();
     MessageHeaders headers1;
 
     std::string queue = exchKeys.mc_sub;
@@ -246,7 +252,7 @@ void mc_subscriber(std::string host) {
             setRunning(false);
             std::cout << "Supposed to close" << std::endl;
         } else if (header == headers1.WSTART) {
-            start.unlock();
+  //          start.unlock();
         }
     };
 
@@ -256,6 +262,9 @@ void mc_subscriber(std::string host) {
     for (auto const & kv : exchange_keys) {
         setup_consumer(chan, subscriber->getQueue(), kv.first, kv.second);
     }
+
+    std::cout << "Working now" << std::endl;
+
     chan->consume(subscriber->getQueue()).onReceived(messageCb).onSuccess(startCb).onError(errorCb);    // Start consuming messages
 
     ev_run(sub_loop, 0);    // Run event loop ev_unloop(sub_loop) will kill the event loop
@@ -264,15 +273,15 @@ void mc_subscriber(std::string host) {
 
 void mc_handler(std::string host) {
 
-    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
+    //AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
 
 
-    for (auto const& kv : exchKeys.declared) {
-        setup_exchange(connection, kv.first, kv.second);
-    }
+    //for (auto const& kv : exchKeys.declared) {
+    //    setup_exchange(connection, kv.first, kv.second);
+    //}
 
-    start.lock();
-    start.unlock();
+    //start.lock();
+    //start.unlock();
 
     int uart0_filestream =-1;
 //	unsigned char * c=data;//here I was testing the code from char to integer
@@ -287,7 +296,7 @@ void mc_handler(std::string host) {
     wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
 
     while(getRunning()){
-        std::this_thread::sleep_for(1000);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
         std::cout << "Motor control running" << std::endl;
 //        Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
@@ -301,7 +310,7 @@ void mc_handler(std::string host) {
 int main() {
 
     _data.command = new Command(0.5, 0, 0, 0, 0, 1);
-    std::string host = "amqp://localhost/";
+    std::string host = "amqp://192.168.11.2/";
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});
