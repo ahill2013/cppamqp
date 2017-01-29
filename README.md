@@ -2,7 +2,7 @@ Instructions for installing both libraries:
 
 
 SimpleAmqpClient:
-    Need to install rabbitmq-c (download from github)
+    Need to install rabbitmq-c ([download](https://github.com/alanxz/rabbitmq-c))
     Need to install boost (sudo apt-get install libboost-all-dev)
     Need to install cmake (sudo apt-get install cmake)
     Need to install doxygen (sudo apt-get install doxygen)
@@ -26,7 +26,7 @@ SimpleAmqpClient:
                 /usr/local/lib
                 /usr/local/lib/x86_64-linux-gnu
 
-    To build and install SimpleAmqpClient
+    To build and install SimpleAmqpClient (https://github.com/alanxz/SimpleAmqpClient)
         Need to download it from github and in the SimpleAmqpClient folder run these commands:
             mkdir build && cd build
             cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
@@ -35,3 +35,4 @@ SimpleAmqpClient:
     Run sudo ldconfig 
 
     Install AMQP-CPP by downloading it from the repo and running their install commands
+    (https://github.com/CopernicaMarketingSoftware/AMQP-CPP)
