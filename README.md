@@ -4,6 +4,7 @@
 - Need to install cmake: `sudo apt-get install cmake`
 - Need to install doxygen: `sudo apt-get install doxygen`
 - Need to install libev: `sudo apt-get install libev-dev`
+- Need to install libssl-dev: `sudo apt-get install libssl-dev`
 
 #### How to install rabbitmq-c:
 
