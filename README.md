@@ -45,3 +45,6 @@ Run `sudo ldconfig`
 #### AMQP-CPP
 Install AMQP-CPP by downloading it from GitHub and running their install commands
 ([download](https://github.com/CopernicaMarketingSoftware/AMQP-CPP))
+
+#Usage
+bin/mc --ip "amqp://192.168.11.2" -m -n

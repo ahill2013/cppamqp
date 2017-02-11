@@ -2,9 +2,7 @@
 #include "../../include/processor.h"
 #include <sys/time.h>
 #include <sys/types.h>
-//#include <tclap/CmdLine.h>
-
-
+#include <tclap/CmdLine.h>
 
 #include <stdio.h>     //libraries needed for UART
 #include <unistd.h>
@@ -22,7 +20,6 @@
 
 MessageHeaders headers;
 ExchKeys exchKeys;
-
 
 int status = 30;
 std::map<std::string, std::string> exchange_keys;
@@ -331,11 +328,20 @@ void mc_handler(std::string host) {
 
 }
 
+TCLAP::CmdLine cmd("Motor control client code", ' ', "0.0");
+TCLAP::ValueArg<std::string> ipArg("i","ip", "IP RabbitMQ-Server lives on", false, "amqp://localhost", "string");
+TCLAP::SwitchArg motorsArg("m", "motors", "myrio connected", cmd, false);
+TCLAP::SwitchArg motionArg("n", "motion", "motion planner reporting", cmd, false);
 
-int main() {
+int main(int argc, char** argv) {
+
+    cmd.add(ipArg);
+
+    cmd.parse(argc, argv);
+
 
     _data.command = new Command(0.5, 0, 0, 0, 0, 1);
-    std::string host = "amqp://localhost";
+    std::string host = ipArg.getValue();
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});

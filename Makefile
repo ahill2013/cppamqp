@@ -1,3 +1,5 @@
+CURRENT_DIR=$(shell pwd)
+
 TEST=src/test/proctest.o mq.o processor.o
 MC=src/mc/mc.o mq.o processor.o
 VISION= vision.o mq.o processor.o
@@ -53,8 +55,8 @@ vision.o: src/vision/vision.cpp
 mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp
 
-# src/mc/mc.o: src/mc/mc.cpp
-#	$(CC) $(CXXFLAGS) -I/home/armin1215/ClionProjects/CPPFrame/lib -c  src/mc/mc.cpp
+src/mc/mc.o: src/mc/mc.cpp
+	$(CC) $(CXXFLAGS) -I$(CURRENT_DIR)/lib -c src/mc/mc.cpp -o src/mc/mc.o
 
 processor.o: src/processor.cpp include/processor.h
 	$(CC) $(CXXFLAGS) -c src/processor.cpp
