@@ -6,11 +6,11 @@
 #define AMQPTRIAL_MQ_H
 #include <amqpcpp.h>
 #include <amqpcpp/libev.h>
-#include "SimpleAmqpClient/SimpleAmqpClient.h"
+#include <SimpleAmqpClient/SimpleAmqpClient.h>
 
-#include "thread"
-#include "mutex"
-#include "chrono"
+#include <thread>
+#include <mutex>
+#include <chrono>
 #include <assert.h>
 
 void setup_consumer(AMQP::TcpChannel* chan, std::string queue, std::string exchange, std::string key);

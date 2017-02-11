@@ -7,10 +7,10 @@
 
 #include <vector>
 #include <deque>
-#include "../lib/rapidjson/document.h"
-#include "../lib/rapidjson/writer.h"
-#include "../lib/rapidjson/stringbuffer.h"
-#include "../lib/rapidjson/pointer.h"
+#include <rapidjson/document.h>
+#include <rapidjson/writer.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/pointer.h>
 #include <stdint.h>
 //using namespace rapidjson;
 

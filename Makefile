@@ -14,10 +14,10 @@ GOBJS= src/gps/gps2.o mq.o processor.o
 JTEST= jsontest.o mq.o
 
 
-INCLUDE= "lib"
+INCLUDE= -I$(CURRENT_DIR)/lib
 CC=g++
 DEBUG=-g -O0
-CXXFLAGS=-Wall $(DEBUG) -std=c++11
+CXXFLAGS=-Wall $(DEBUG) -std=c++11 $(INCLUDE)
 LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq
 
 all: gps test vision
@@ -35,7 +35,7 @@ comtest: $(COMTEST)
 	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
 
 mc: $(MC)
-	$(CC) $(CXXFLAGS) -I/home/armin1215/ClionProjects/CPPFrame/lib $(MC) -o bin/mc $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(MC) -o bin/mc $(LDLIBS)
 
 gps: $(GPS)
 	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps $(LDLIBS)
@@ -55,8 +55,8 @@ vision.o: src/vision/vision.cpp
 mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp
 
-src/mc/mc.o: src/mc/mc.cpp
-	$(CC) $(CXXFLAGS) -I$(CURRENT_DIR)/lib -c src/mc/mc.cpp -o src/mc/mc.o
+#src/mc/mc.o: src/mc/mc.cpp
+#	$(CC) $(CXXFLAGS) -I$(CURRENT_DIR)/lib -c src/mc/mc.cpp -o src/mc/mc.o
 
 processor.o: src/processor.cpp include/processor.h
 	$(CC) $(CXXFLAGS) -c src/processor.cpp
