@@ -2,6 +2,9 @@
 #include "../../include/processor.h"
 #include <sys/time.h>
 #include <sys/types.h>
+//#include <tclap/CmdLine.h>
+
+
 
 #include <stdio.h>     //libraries needed for UART
 #include <unistd.h>
@@ -127,19 +130,22 @@ GPSMessage* getGPS() {
 //
 //    std::cout << "Attempting to Send" << std::endl;
 //
+//
 //    _mutexes.commands.lock();
 //
-//    Command* toSend;
+//    Command* toSend = nullptr;
 //    if (_data.commands != nullptr) {
-//
+//        std::cout << "Pulling command" << std::endl;
+//        toSend = _data.commands->remove();
 //    }
-//
-//    toSend = _data.commands->remove();
-//
+
 //    if (toSend == nullptr) {
+//        std::cout << "Using default command" << std::endl;
 //        toSend = _data.command;
 //    }
-//
+
+//        std::cout << toSend->angvel << std::endl;
+
 //    _mutexes.commands.unlock();
 //
 //    int uart0_filestream;
@@ -243,13 +249,8 @@ void mc_subscriber(std::string host) {
             Commands* commands = Processor::decode_commands(message.message());
             setCommands(commands);
             std::cout << "Got commands" << std::endl;
-            Commands* comm_ret = getCommands();
 
-            Command* comm = comm_ret->remove();
 
-            std::cout << comm->angvel << std::endl;
-            std::cout << comm->startang << std::endl;
-            std::cout << comm->duration << std::endl;
         } else if (header == headers1.WGPSFRAME) {
             GPSMessage* gpsMessage = Processor::decode_gps(message.message(), true);
             setGPS(gpsMessage);
@@ -302,9 +303,27 @@ void mc_handler(std::string host) {
 //    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
 
     while(getRunning()){
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
-        std::cout << "Motor control running" << std::endl;
+//        std::cout << "Motor control running" << std::endl;
+
+        _mutexes.commands.lock();
+
+        Command* toSend = nullptr;
+        if (_data.commands != nullptr) {
+            std::cout << "Pulling command" << std::endl;
+            toSend = _data.commands->remove();
+        }
+
+        if (toSend == nullptr) {
+            std::cout << "Using default command" << std::endl;
+            toSend = _data.command;
+        }
+
+//        std::cout << toSend->angvel << std::endl;
+
+        _mutexes.commands.unlock();
+
 //        Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
 //        std::string status_mess = Processor::encode_status(*status);
 //        send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
@@ -316,7 +335,7 @@ void mc_handler(std::string host) {
 int main() {
 
     _data.command = new Command(0.5, 0, 0, 0, 0, 1);
-    std::string host = "amqp://192.168.11.2";
+    std::string host = "amqp://localhost";
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});

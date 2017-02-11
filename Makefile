@@ -10,6 +10,9 @@ COMTEST=src/test/command_test.o mq.o processor.o
 GPS= src/gps/gps.o mq.o processor.o
 GOBJS= src/gps/gps2.o mq.o processor.o
 JTEST= jsontest.o mq.o
+
+
+INCLUDE= "lib"
 CC=g++
 DEBUG=-g -O0
 CXXFLAGS=-Wall $(DEBUG) -std=c++11
@@ -30,7 +33,7 @@ comtest: $(COMTEST)
 	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
 
 mc: $(MC)
-	$(CC) $(CXXFLAGS) $(MC) -o bin/mc $(LDLIBS)
+	$(CC) $(CXXFLAGS) -I/home/armin1215/ClionProjects/CPPFrame/lib $(MC) -o bin/mc $(LDLIBS)
 
 gps: $(GPS)
 	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps $(LDLIBS)
@@ -49,6 +52,9 @@ vision.o: src/vision/vision.cpp
 
 mq.o: src/mq.cpp include/mq.h
 	$(CC) $(CXXFLAGS) -c src/mq.cpp
+
+# src/mc/mc.o: src/mc/mc.cpp
+#	$(CC) $(CXXFLAGS) -I/home/armin1215/ClionProjects/CPPFrame/lib -c  src/mc/mc.cpp
 
 processor.o: src/processor.cpp include/processor.h
 	$(CC) $(CXXFLAGS) -c src/processor.cpp

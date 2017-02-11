@@ -1,1 +1,1 @@
-CMakeLists.txt not found in /home/armin1215/ClionProjects/cppamqp
+CMakeLists.txt not found in /home/armin1215/ClionProjects/CPPFrame
