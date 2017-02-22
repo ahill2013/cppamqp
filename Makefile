@@ -2,6 +2,7 @@ CURRENT_DIR=$(shell pwd)
 
 TEST=src/test/proctest.o mq.o processor.o
 MC=src/mc/mc.o mq.o processor.o
+TESTRC=src/mc/testrc.o mq.o processor.o
 VISION= vision.o mq.o processor.o
 VISTEST=src/test/visual_test.o mq.o processor.o
 # DO NOT CHANGE THE ORDER OF THESE -I INCLUDE DIRECTORIES OR EVERYTHING BREAKS IN THE VISION COMPILATION.
@@ -36,6 +37,9 @@ comtest: $(COMTEST)
 
 mc: $(MC)
 	$(CC) $(CXXFLAGS) $(MC) -o bin/mc $(LDLIBS)
+
+testrc: $(TESTRC)
+	$(CC) $(CXXFLAGS) $(TESTRC) -o bin/rc $(LDLIBS)
 
 gps: $(GPS)
 	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps $(LDLIBS)

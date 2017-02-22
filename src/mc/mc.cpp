@@ -33,8 +33,8 @@ struct MotorPublishInfo {
 } motorInfo;
 
 struct StatusPublish {
-    std::string exchange = exchKeys.gps_exchange;
-    std::string key = exchKeys.control_key;
+    std::string exchange = exchKeys.mc_exchange;
+    std::string key = exchKeys.log_key;
     std::string header = headers.WSTATUS;
 } statusInfo;
 
@@ -214,7 +214,9 @@ void mc_subscriber(std::string host) {
 
     std::string queue = exchKeys.mc_sub;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
+    std::string coepernica_host = "amqp://" + host;
+
+    MQSub* subscriber = new MQSub(*sub_loop, coepernica_host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {
@@ -277,12 +279,12 @@ void mc_subscriber(std::string host) {
 
 void mc_handler(std::string host) {
 
-    //AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
+    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create(host);
 
 
-    //for (auto const& kv : exchKeys.declared) {
-    //    setup_exchange(connection, kv.first, kv.second);
-    //}
+    for (auto const& kv : exchKeys.declared) {
+        setup_exchange(connection, kv.first, kv.second);
+    }
 
     //start.lock();
     //start.unlock();
@@ -299,10 +301,10 @@ void mc_handler(std::string host) {
 //    digitalWrite(SYNC2,LOW);
 //    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
 
+    int fakeRunner = 1;
+
     while(getRunning()){
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-//        std::cout << "Motor control running" << std::endl;
 
         _mutexes.commands.lock();
 
@@ -317,19 +319,26 @@ void mc_handler(std::string host) {
             toSend = _data.command;
         }
 
-//        std::cout << toSend->angvel << std::endl;
-
         _mutexes.commands.unlock();
 
-//        Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
-//        std::string status_mess = Processor::encode_status(*status);
-//        send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
+        if (fakeRunner % 2 != 0) {
+            std::cout << "Reporting Status" << std::endl;
+            Status *status = new Status(exchKeys.MC, getRunning(), "normal");
+            std::string status_mess = Processor::encode_status(*status);
+            send_message(connection, status_mess, headers.WSTATUS, exchKeys.mc_exchange, exchKeys.log_key);
+            fakeRunner++;
+        } else {
+            Status *status = new Status(exchKeys.MC, false, "error");
+            std::string status_mess = Processor::encode_status(*status);
+            send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
+            fakeRunner = 1;
+        }
     }
 
 }
 
 TCLAP::CmdLine cmd("Motor control client code", ' ', "0.0");
-TCLAP::ValueArg<std::string> ipArg("i","ip", "IP RabbitMQ-Server lives on", false, "amqp://localhost", "string");
+TCLAP::ValueArg<std::string> ipArg("i","ip", "IP RabbitMQ-Server lives on", false, "localhost", "string");
 TCLAP::SwitchArg motorsArg("m", "motors", "myrio connected", cmd, false);
 TCLAP::SwitchArg motionArg("n", "motion", "motion planner reporting", cmd, false);
 
