@@ -19,7 +19,7 @@ INCLUDE= -I$(CURRENT_DIR)/lib
 CC=g++
 DEBUG=-g -O0
 CXXFLAGS=-Wall $(DEBUG) -std=c++11 $(INCLUDE)
-LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq -l wiringPi
+LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq -lwiringPi
 
 
 all: gps test vision
