@@ -10,10 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0aa5d27c-484e-4241-90f2-c39dcbc94cd0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/mc/testrc.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mc/mc.cpp" afterPath="$PROJECT_DIR$/src/mc/mc.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mc/testrc.cpp" afterPath="$PROJECT_DIR$/src/mc/testrc.cpp" />
     </list>
     <ignored path="CPPFrame.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,18 +37,18 @@
       <file leaf-file-name="mq.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/mq.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
+            <state relative-caret-position="1242">
               <caret line="69" column="43" lean-forward="false" selection-start-line="69" selection-start-column="43" selection-end-line="69" selection-end-column="43" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="processor.h" pinned="false" current-in-tab="false">
+      <file leaf-file-name="processor.h" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/include/processor.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="12" column="10" lean-forward="false" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+            <state relative-caret-position="144">
+              <caret line="8" column="16" lean-forward="true" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -87,18 +87,18 @@
       <file leaf-file-name="mc.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="320" column="0" lean-forward="false" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
+            <state relative-caret-position="208">
+              <caret line="216" column="46" lean-forward="true" selection-start-line="216" selection-start-column="0" selection-end-line="217" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="testrc.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="testrc.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mc/testrc.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="470" column="0" lean-forward="true" selection-start-line="470" selection-start-column="0" selection-end-line="470" selection-end-column="0" />
+            <state relative-caret-position="469">
+              <caret line="352" column="25" lean-forward="false" selection-start-line="352" selection-start-column="25" selection-end-line="352" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -160,12 +160,13 @@
         <option value="$PROJECT_DIR$/src/processor.cpp" />
         <option value="$PROJECT_DIR$/.idea/testcli.cpp" />
         <option value="$PROJECT_DIR$/testcli.cpp" />
-        <option value="$PROJECT_DIR$/include/processor.h" />
         <option value="$PROJECT_DIR$/include/mq.h" />
         <option value="$USER_HOME$/Desktop/mcrcPi.cpp" />
-        <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
         <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/src/mc/rc.cpp" />
+        <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
+        <option value="$PROJECT_DIR$/src/mc/testrc.cpp" />
+        <option value="$PROJECT_DIR$/include/processor.h" />
       </list>
     </option>
   </component>
@@ -178,7 +179,7 @@
   <component name="ProjectFrameBounds">
     <option name="x" value="65" />
     <option name="y" value="52" />
-    <option name="width" value="921" />
+    <option name="width" value="901" />
     <option name="height" value="1028" />
   </component>
   <component name="ProjectView">
@@ -444,7 +445,9 @@
       <workItem from="1485998915252" duration="254000" />
       <workItem from="1486833292619" duration="3275000" />
       <workItem from="1486837796749" duration="9072000" />
-      <workItem from="1487799868095" duration="2052000" />
+      <workItem from="1487799868095" duration="2316000" />
+      <workItem from="1487804011066" duration="2005000" />
+      <workItem from="1487818631569" duration="315000" />
     </task>
     <task id="LOCAL-00001" summary="Command from Nav to Motors">
       <created>1484190183533</created>
@@ -492,10 +495,10 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="197685000" />
+    <option name="totallyTimeSpent" value="200269000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="52" width="921" height="1028" extended-state="4" />
+    <frame x="65" y="52" width="901" height="1028" extended-state="4" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47737068" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -775,32 +778,34 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/include/mq.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
+        <state relative-caret-position="1242">
           <caret line="69" column="43" lean-forward="false" selection-start-line="69" selection-start-column="43" selection-end-line="69" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/processor.h">
+    <entry file="file://$PROJECT_DIR$/src/mc/mcrcPi.cpp" />
+    <entry file="file://$PROJECT_DIR$/src/mc/rc.cpp" />
+    <entry file="file://$PROJECT_DIR$/src/test/nav.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="10" lean-forward="false" selection-start-line="12" selection-start-column="10" selection-end-line="12" selection-end-column="10" />
+        <state relative-caret-position="306">
+          <caret line="17" column="7" lean-forward="false" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mc/mcrcPi.cpp">
+    <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="485" column="0" lean-forward="true" selection-start-line="485" selection-start-column="0" selection-end-line="485" selection-end-column="0" />
+        <state relative-caret-position="208">
+          <caret line="216" column="46" lean-forward="true" selection-start-line="216" selection-start-column="0" selection-end-line="217" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/mc/rc.cpp">
+    <entry file="file://$PROJECT_DIR$/src/mc/testrc.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="205">
-          <caret line="447" column="1" lean-forward="true" selection-start-line="447" selection-start-column="1" selection-end-line="447" selection-end-column="1" />
+        <state relative-caret-position="469">
+          <caret line="352" column="25" lean-forward="false" selection-start-line="352" selection-start-column="25" selection-end-line="352" selection-end-column="25" />
           <folding />
         </state>
       </provider>
@@ -813,26 +818,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/nav.cpp">
+    <entry file="file://$PROJECT_DIR$/include/processor.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="17" column="7" lean-forward="false" selection-start-line="17" selection-start-column="7" selection-end-line="17" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mc/mc.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="320" column="0" lean-forward="false" selection-start-line="320" selection-start-column="0" selection-end-line="320" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mc/testrc.cpp">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="470" column="0" lean-forward="true" selection-start-line="470" selection-start-column="0" selection-end-line="470" selection-end-column="0" />
+        <state relative-caret-position="144">
+          <caret line="8" column="16" lean-forward="true" selection-start-line="8" selection-start-column="16" selection-end-line="8" selection-end-column="16" />
           <folding />
         </state>
       </provider>

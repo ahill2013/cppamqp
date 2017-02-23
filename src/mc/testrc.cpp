@@ -321,9 +321,11 @@ void mc_subscriber(std::string host) {
 //    start.lock();
     MessageHeaders headers1;
 
+    std::string coepernica_host = "amqp://" + host;
+
     std::string queue = exchKeys.mc_sub;
 
-    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
+    MQSub* subscriber = new MQSub(*sub_loop, coepernica_host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {

@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <termios.h>
-//#include <wiringPi.h>
+#include <wiringPi.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -123,74 +123,74 @@ GPSMessage* getGPS() {
     return gpsMessage;
 }
 
-//void interupt1(){
-//
-//    std::cout << "Attempting to Send" << std::endl;
-//
-//
-//    _mutexes.commands.lock();
-//
-//    Command* toSend = nullptr;
-//    if (_data.commands != nullptr) {
-//        std::cout << "Pulling command" << std::endl;
-//        toSend = _data.commands->remove();
-//    }
+void interupt1(){
 
-//    if (toSend == nullptr) {
-//        std::cout << "Using default command" << std::endl;
-//        toSend = _data.command;
-//    }
+    std::cout << "Attempting to Send" << std::endl;
 
-//        std::cout << toSend->angvel << std::endl;
 
-//    _mutexes.commands.unlock();
-//
-//    int uart0_filestream;
-//    uart0_filestream = open("/dev/serial0", O_RDWR  | O_NOCTTY | O_NDELAY);
-//    char *  p_tx_buffer;
-//    char tx_buffer[20];
-//    char converted[50];
-//
-//    std::cout << toSend->linvel << std::endl;
-//    std::cout << toSend->angvel << std::endl;
-//
-//    double n = sprintf(converted, "%.2f %.2f",toSend->linvel,toSend->angvel);
-//    p_tx_buffer=&tx_buffer[0];
-//    std::cout<<"sending"<< std::endl;
-//    if (uart0_filestream == -1){
-//        std::cout <<"Error - Unable to open Uart. Ensure it is not in use by another application and that it is \n"<< std::endl;
-//    }
-//
-//    //bellow I am setting up the UART Parameters
-//    struct termios options;
-//    tcgetattr(uart0_filestream, &options);
-//    options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
-//    options.c_iflag = IGNPAR;
-//    options.c_oflag = 0;
-//    options.c_lflag = 0;
-//    tcflush(uart0_filestream, TCIFLUSH);
-//    tcsetattr(uart0_filestream, TCSANOW, &options);
-//    *p_tx_buffer++=converted[0];
-//    *p_tx_buffer++=converted[1];
-//    *p_tx_buffer++=converted[2];
-//    *p_tx_buffer++=converted[3];
-//    *p_tx_buffer++=converted[4];
-//    *p_tx_buffer++=converted[5];
-//    *p_tx_buffer++=converted[6];
-//    *p_tx_buffer++=converted[7];
-//    *p_tx_buffer++=converted[8];
-//    *p_tx_buffer++=converted[9];
-//    *p_tx_buffer++=converted[10];
-//    if(uart0_filestream !=-1){
-//        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer- &tx_buffer[0]));
-//        //cout<<count<<endl;
-//        if(count<0){
-//            std::cout <<"UART TX error"<< std::endl;
-//        }
-//    }
-//
-//
-//}
+    _mutexes.commands.lock();
+
+    Command* toSend = nullptr;
+    if (_data.commands != nullptr) {
+        std::cout << "Pulling command" << std::endl;
+        toSend = _data.commands->remove();
+    }
+
+    if (toSend == nullptr) {
+        std::cout << "Using default command" << std::endl;
+        toSend = _data.command;
+    }
+
+        std::cout << toSend->angvel << std::endl;
+
+    _mutexes.commands.unlock();
+
+    int uart0_filestream;
+    uart0_filestream = open("/dev/serial0", O_RDWR  | O_NOCTTY | O_NDELAY);
+    char *  p_tx_buffer;
+    char tx_buffer[20];
+    char converted[50];
+
+    std::cout << toSend->linvel << std::endl;
+    std::cout << toSend->angvel << std::endl;
+
+    double n = sprintf(converted, "%.2f %.2f",toSend->linvel,toSend->angvel);
+    p_tx_buffer=&tx_buffer[0];
+    std::cout<<"sending"<< std::endl;
+    if (uart0_filestream == -1){
+        std::cout <<"Error - Unable to open Uart. Ensure it is not in use by another application and that it is \n"<< std::endl;
+    }
+
+    //bellow I am setting up the UART Parameters
+    struct termios options;
+    tcgetattr(uart0_filestream, &options);
+    options.c_cflag = B9600 | CS8 | CLOCAL | CREAD;
+    options.c_iflag = IGNPAR;
+    options.c_oflag = 0;
+    options.c_lflag = 0;
+    tcflush(uart0_filestream, TCIFLUSH);
+    tcsetattr(uart0_filestream, TCSANOW, &options);
+    *p_tx_buffer++=converted[0];
+    *p_tx_buffer++=converted[1];
+    *p_tx_buffer++=converted[2];
+    *p_tx_buffer++=converted[3];
+    *p_tx_buffer++=converted[4];
+    *p_tx_buffer++=converted[5];
+    *p_tx_buffer++=converted[6];
+    *p_tx_buffer++=converted[7];
+    *p_tx_buffer++=converted[8];
+    *p_tx_buffer++=converted[9];
+    *p_tx_buffer++=converted[10];
+    if(uart0_filestream !=-1){
+        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer- &tx_buffer[0]));
+        //cout<<count<<endl;
+        if(count<0){
+            std::cout <<"UART TX error"<< std::endl;
+        }
+    }
+
+
+}
 
 
 struct ev_loop* sub_loop = ev_loop_new();
@@ -289,50 +289,51 @@ void mc_handler(std::string host) {
     //start.lock();
     //start.unlock();
 
-//    int uart0_filestream =-1;
-////	unsigned char * c=data;//here I was testing the code from char to integer
-////	int dataI[6]={3,3,3,3,3,3};
-////	double * p=dataI;  Here I was testing the code from char to integer
-////	chartoint(p,c);
-//    wiringPiSetupGpio ();  //This lets us use broad com pin numberings to set pin values
-//    pinMode (SYNC,INPUT);
-//    pinMode (SYNC2,OUTPUT);
-//    pinMode (SYNC3,INPUT);
-//    digitalWrite(SYNC2,LOW);
-//    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
+    int uart0_filestream =-1;
+//	unsigned char * c=data;//here I was testing the code from char to integer
+//	int dataI[6]={3,3,3,3,3,3};
+//	double * p=dataI;  Here I was testing the code from char to integer
+//	chartoint(p,c);
+    wiringPiSetupGpio ();  //This lets us use broad com pin numberings to set pin values
+    pinMode (SYNC,INPUT);
+    pinMode (SYNC2,OUTPUT);
+    pinMode (SYNC3,INPUT);
+    digitalWrite(SYNC2,LOW);
+    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
 
     int fakeRunner = 1;
 
-    while(getRunning()){
+    while(getRunning()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+        std::cout << "Motor Control is still alive" << std::endl;
 
-        _mutexes.commands.lock();
-
-        Command* toSend = nullptr;
-        if (_data.commands != nullptr) {
-            std::cout << "Pulling command" << std::endl;
-            toSend = _data.commands->remove();
-        }
-
-        if (toSend == nullptr) {
-            std::cout << "Using default command" << std::endl;
-            toSend = _data.command;
-        }
-
-        _mutexes.commands.unlock();
-
-        if (fakeRunner % 2 != 0) {
-            std::cout << "Reporting Status" << std::endl;
-            Status *status = new Status(exchKeys.MC, getRunning(), "normal");
-            std::string status_mess = Processor::encode_status(*status);
-            send_message(connection, status_mess, headers.WSTATUS, exchKeys.mc_exchange, exchKeys.log_key);
-            fakeRunner++;
-        } else {
-            Status *status = new Status(exchKeys.MC, false, "error");
-            std::string status_mess = Processor::encode_status(*status);
-            send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
-            fakeRunner = 1;
-        }
+//        _mutexes.commands.lock();
+//
+//        Command* toSend = nullptr;
+//        if (_data.commands != nullptr) {
+//            std::cout << "Pulling command" << std::endl;
+//            toSend = _data.commands->remove();
+//        }
+//
+//        if (toSend == nullptr) {
+//            std::cout << "Using default command" << std::endl;
+//            toSend = _data.command;
+//        }
+//
+//        _mutexes.commands.unlock();
+//
+//        if (fakeRunner % 2 != 0) {
+//            std::cout << "Reporting Status" << std::endl;
+//            Status *status = new Status(exchKeys.MC, getRunning(), "normal");
+//            std::string status_mess = Processor::encode_status(*status);
+//            send_message(connection, status_mess, headers.WSTATUS, exchKeys.mc_exchange, exchKeys.log_key);
+//            fakeRunner++;
+//        } else {
+//            Status *status = new Status(exchKeys.MC, false, "error");
+//            std::string status_mess = Processor::encode_status(*status);
+//            send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
+//            fakeRunner = 1;
+//        }
     }
 
 }
@@ -351,6 +352,8 @@ int main(int argc, char** argv) {
 
     _data.command = new Command(0.5, 0, 0, 0, 0, 1);
     std::string host = ipArg.getValue();
+
+    std::cout << host << std::endl;
 
     exchange_keys.insert({exchKeys.gps_exchange, exchKeys.gps_key});
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});
