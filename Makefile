@@ -2,6 +2,7 @@ CURRENT_DIR=$(shell pwd)
 
 TEST=src/test/proctest.o mq.o processor.o
 MC=src/mc/mc.o mq.o processor.o
+RC=src/mc/rc.o mq.o processor.o
 TESTRC=src/mc/testrc.o mq.o processor.o
 VISION= vision.o mq.o processor.o
 VISTEST=src/test/visual_test.o mq.o processor.o
@@ -19,7 +20,7 @@ INCLUDE= -I$(CURRENT_DIR)/lib
 CC=g++
 DEBUG=-g -O0
 CXXFLAGS=-Wall $(DEBUG) -std=c++11 $(INCLUDE)
-LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq -lwiringPi
+LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq
 
 
 all: gps test vision
@@ -37,10 +38,13 @@ comtest: $(COMTEST)
 	$(CC) $(CXXFLAGS) $(COMTEST) -o bin/com_test $(LDLIBS)
 
 mc: $(MC)
-	$(CC) $(CXXFLAGS) $(MC) -o bin/mc $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(MC) -o bin/mc $(LDLIBS) -lwiringPi
+
+rc: $(RC)
+	$(CC) $(CXXFLAGS) $(RC) -o bin/rc $(LDLIBS) -lwiringPi
 
 testrc: $(TESTRC)
-	$(CC) $(CXXFLAGS) $(TESTRC) -o bin/rc $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(TESTRC) -o bin/testrc $(LDLIBS) -lwiringPi
 
 gps: $(GPS)
 	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps $(LDLIBS)
