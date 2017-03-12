@@ -47,7 +47,7 @@ testrc: $(TESTRC)
 	$(CC) $(CXXFLAGS) $(TESTRC) -o bin/testrc $(LDLIBS) -lwiringPi
 
 gps: $(GPS)
-	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps $(LDLIBS)
+	$(CC) $(CXXFLAGS) $(GPS) -o bin/gps -lCommFrame $(LDLIBS)
 
 vision: $(VISION)
 	$(CC) $(CXXFLAGS) $(VISION) -o bin/vision $(VISLD) $(LDLIBS)
@@ -71,4 +71,4 @@ processor.o: src/processor.cpp include/processor.h
 	$(CC) $(CXXFLAGS) -c src/processor.cpp
 
 clean:
-	rm -f src/*.o src/mc/*.o src/gps/*.o src/test/*.o *.o bin/*
+	rm -f src/*.o src/mc/*.o src/gps/*.o src/test/*.o libCommFrame.so.1.0 *.o bin/*

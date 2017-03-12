@@ -1,5 +1,5 @@
-#include "../../include/mq.h"
-#include "../../include/processor.h"
+#include <myamqp/mq.h>
+#include <myamqp/processor.h>
 #include <stdio.h>
 
 using namespace rapidjson;
@@ -97,7 +97,7 @@ std::mutex start;
  */
 void gps_publisher(std::string host) {
 
-    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("amqp://192.68.11.2:15674");
+    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("127.0.0.1");
 
     for (auto const& kv : exchKeys.declared) {
         setup_exchange(connection, kv.first, kv.second);
@@ -105,8 +105,8 @@ void gps_publisher(std::string host) {
 
     int _iterations = 0;
 
-    start.lock();
-    start.unlock();
+//    start.lock();
+//    start.unlock();
 
 
     // Turn this into a while(true) loop to keep posting messages
@@ -145,7 +145,7 @@ void gps_publisher(std::string host) {
 
 // Listen for incoming information like commands from Control or requests from other components
 void gps_subscriber(std::string host) {
-    start.lock();
+//    start.lock();
     MessageHeaders headers1;
 
     std::cout << "Working queue" << std::endl;
@@ -194,7 +194,7 @@ void gps_subscriber(std::string host) {
             setRunning(false);
             std::cout << "Supposed to close" << std::endl;
         } else if (header == headers1.WSTART) {
-            start.unlock();
+//            start.unlock();
         }
     };
 
