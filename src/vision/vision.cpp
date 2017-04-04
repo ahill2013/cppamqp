@@ -155,6 +155,65 @@ int32_t RecordFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& recFrame, sl::zed::Mat& dept
     return 0;
 }
 
+cv::gpu::GpuMat HomomorphicFilter(cv::gpu::Mat& input)
+{
+    cv::gpu::GpuMat output;
+    cv::gpu::GpuMat outGray;
+
+    cv::gpu::GpuMat tmp;
+
+    cv::gpu::GpuMat ycrImg;//(input.size(), CV_32FC3);
+
+    std::vector<cv::gpu::GpuMat> imgParts;
+    std::vector<cv::gpu::GpuMat> parts2;
+
+    uint32_t sigma = 10;
+    uint32_t i = 0;
+
+    float lower = 0.5f;
+    float upper = 3.0f;
+    float threshold = 10.5f;
+    
+    int m1 = cv::gpu::getOptimalDFTSize( input.rows );
+    int n1 = cv::gpu::getOptimalDFTSize( input.cols );
+
+    cv::gpu::cvtColor(input, ycrImg, CV_RGB2YCrCb);
+
+    printf("before split\n");
+    cv::gpu::split(input, imgParts);
+
+    cv::Mat yChan = imgParts[0];
+    imgParts[0].convertTo(yChan, CV_32F);
+
+    printf("before log\n");
+    cv::gpu::log(yChan, yChan);
+
+    cv::gpu::dft(yChan, yChan);
+    cv::gpu::Laplacian(yChan, yChan, CV_32F, 3);
+    cv::gpu::dft(yChan, yChan, cv::DFT_INVERSE|cv::DFT_REAL_OUTPUT);
+
+    cv::gpu::exp(yChan, yChan);
+
+    cv::gpu::split(yChan, parts2);
+
+    parts2[0].convertTo(imgParts[0], CV_8U);//imgParts[0] = parts2[0];
+
+    // printf("parts2[0] = %d\n", parts2[0].depth());
+
+    printf("imgParts[0].depth = %d\n", imgParts[0].depth());
+    printf("imgParts[1].depth = %d\n", imgParts[1].depth());
+
+    //printf("before merge\n");
+    cv::gpu::merge(imgParts, output);
+
+    printf("before thresh\n");
+    cv::gpu::threshold(output, output, 215, 220, CV_THRESH_BINARY);
+
+    printf("before ret\n");
+
+    return output;
+}
+
 void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& outLines)
 {
     uint32_t rows = frame.rows;
@@ -164,8 +223,10 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
 
     // Currently just going to grab the right image until we can accurately combine the images
 
-    cv::gpu::GpuMat half = frame.colRange(0, frame.cols/2);
+    cv::gpu::GpuMat half;// = frame.colRange(0, frame.cols/2);
     cv::gpu::GpuMat afterGaus;
+
+    cv::gpu::GpuMat hommorphicOut = HomomorphicFilter(frame);
 
     cv::gpu::cvtColor(half, cvImageViewGray, CV_BGRA2GRAY);
 
@@ -173,7 +234,7 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
 
     for(uint32_t i = 0; i < gausCount; i++)
     {
-        cv::gpu::GaussianBlur(half, afterGaus, cv::Size(21,21), 0, 0, cv::BORDER_DEFAULT);
+        cv::gpu::GaussianBlur(half, afterGaus, cv::Size(11,11), 0, 0, cv::BORDER_DEFAULT);
     }
 
     cv::gpu::GpuMat cvEdges(rows, cols, CV_8UC3);
@@ -189,7 +250,7 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     cv::gpu::HoughLinesBuf hough_buffer;
 
     //printf("rows = %d cols = %d\n", image.rows, image.cols);
-    cv::gpu::HoughLinesP(cvEdges, houghOut, hough_buffer, 1, CV_PI/180, 25, 5, 50);
+    cv::gpu::HoughLinesP(cvEdges, houghOut, hough_buffer, 1, CV_PI/180, 25, 50, 70);
 
     // Going to find runs of points in a certain pixel distance from eachother
     // in the x coordinate plane then we'll derive a single point using the average of 
@@ -207,7 +268,7 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     cv::Mat houghDl(1, houghOut.cols, CV_8UC3, &houghLines[0]);
     houghOut.download(houghDl);
 
-    while(true)
+    /*while(true)
     {
         cv::Vec4i baseLine = houghLines[curIndex];
 
@@ -275,7 +336,7 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
             break;
 
         curIndex++;
-    }
+    }*/
 
 /* TEST CODE, REMOVE BEFORE USE */
 /*
