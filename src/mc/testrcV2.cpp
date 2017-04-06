@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <termios.h>
-//#include <wiringPi.h>
+#include <wiringPi.h>
 #include <stdlib.h>
 #include <errno.h>
 
@@ -22,6 +22,7 @@
 #define estop 18
 #define channelA 23
 #define channelB 24
+int centa, centb;
 
 struct RCInfo {
     bool f = false;
@@ -111,42 +112,45 @@ struct Mutexes {
 } _mutexes;
 
 ////sets a pin up to be used as a rc signal reader
-//void setPWMpin(int pin){
-//	pinMode (pin, INPUT);
-//	pullUpDnControl(pin, PUD_DOWN);
-//}
-//
+void setPWMpin(int pin){
+	pinMode (pin, INPUT);
+	pullUpDnControl(pin, PUD_DOWN);
+}
+
 ////reads the rc servo signal coming to the pin
-//unsigned int readPWM(int pin) {
-//	//waits for and catches peak start
-//		while(digitalRead(pin) == 0) {}
-//		unsigned int edgeA = micros();
-//
-//		//waits for and catches peak end
-//		while(digitalRead(pin) == 1) {}
-//		unsigned int edgeB = micros();
-//
-//		//calculates the length of the peak and returns it
-//		return edgeB-edgeA;
-//}
+int readPWM(int pin) {
+	//waits for and catches peak start
+		while(digitalRead(pin) == 0) {}
+		int edgeA = micros();
+
+		//waits for and catches peak end
+		while(digitalRead(pin) == 1) {}
+		int edgeB = micros();
+
+		//calculates the length of the peak and returns it
+		return edgeB-edgeA;
+}
 
 void rcControl(){
-	unsigned int stop, chA, chB;  //peak time in microseconds
-	double vmax = 2.0, wmax = 2.0;
+	int stop, chA, chB;  //peak time in microseconds
+	double vmax = 1.0, wmax = 1.0;
     double w, v;
-	unsigned int time = 10000;
+
 	
-//	stop = readPWM(estop);
-//	chA = readPWM(channelA);
-//	chB = readPWM(channelB);
+	stop = readPWM(estop);
+	chA = readPWM(channelA);
+	chB = readPWM(channelB);
+	//std::cout << chA << " " << chB << std::endl;
 	//constants for equation motions will change
-//	w = wmax*(chA-1360)/400;
-//	v = vmax*(chB-1490)/400;
+	w =wmax* (chA-centa)/400;
+	v = vmax*(chB-centb)/400;
+	if(w < .015 && w > -.015){w = 0;}
+	if(v<.015 && v >-.015){v = 0;}
 
-    v = 1.1;
-    w = 0.25;
+//    v = 1.1;
+//    w = 0.25;
 
-    stop = 1800;
+//    stop = 1800;
     setLinear(v);
     setAngular(w);
 		
@@ -321,11 +325,9 @@ void mc_subscriber(std::string host) {
 //    start.lock();
     MessageHeaders headers1;
 
-    std::string coepernica_host = "amqp://" + host;
-
     std::string queue = exchKeys.mc_sub;
 
-    MQSub* subscriber = new MQSub(*sub_loop, coepernica_host, queue);
+    MQSub* subscriber = new MQSub(*sub_loop, host, queue);
     AMQP::TcpChannel* chan = subscriber->getChannel();
 
     for (auto const& kv : exchKeys.declared) {
@@ -449,13 +451,18 @@ void mc_handler(std::string host) {
 //rc control input
 void rcInput() {
 	//sets up wiringPi and pins
-	// wiringPiSetupGpio(); Duplicate
-//	setPWMpin(estop);
-//	setPWMpin(channelA);
-//	setPWMpin(channelB);
+	 wiringPiSetupGpio();// Duplicate
+	setPWMpin(estop);
+	setPWMpin(channelA);
+	setPWMpin(channelB);
 	
 	//rc control code runs in this function
 	//currently never will stop, needs something here.
+	//calibration in for loop below.
+	for(int i =  0; i < 10; i++){
+		centa = readPWM(channelA);
+		centb = readPWM(channelB);
+	}
     int i = 0;
 	while(i < 200) {
 		rcControl();
@@ -484,14 +491,14 @@ int main(int argc, char** argv) {
     exchange_keys.insert({exchKeys.control_exchange, exchKeys.mc_key});
     exchange_keys.insert({exchKeys.nav_exchange, exchKeys.mc_key});
 
-    std::thread sub(mc_subscriber, host);
+//    std::thread sub(mc_subscriber, host);
     std::thread pub(mc_handler, host);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	std::thread remote(rcInput); //is this correct for making thread, YES
 
 
-    sub.join();
+ //   sub.join();
     pub.join();
 	remote.join();
 
