@@ -167,6 +167,8 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
     std::vector<cv::gpu::GpuMat> imgParts;
     std::vector<cv::gpu::GpuMat> parts2;
 
+    std::vector<cv::gpu::GpuMat> dftFix;
+
     /*uint32_t sigma = 10;
     uint32_t i = 0;
 
@@ -188,9 +190,18 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
     printf("before log\n");
     cv::gpu::log(yChan, yChan);
 
+    printf("before dft n1 = %d  m1 = %d ychan channels = %d\n", n1, m1, yChan.channels());
     cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), 0);
+    cv::gpu::split(yChan, dftFix);
+    yChan = dftFix[0];
+    printf("before laplacian\n");
+    printf("ychan channels = %d\n", yChan.channels());
     cv::gpu::Laplacian(yChan, yChan, CV_32F, 3);
-    cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), cv::DFT_INVERSE|cv::DFT_REAL_OUTPUT);
+    printf("before inverse dft yChan channels = %d\n", yChan.channels());
+    cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), cv::DFT_INVERSE);//|cv::DFT_REAL_OUTPUT);
+    cv::gpu::split(yChan, dftFix);
+
+    yChan = dftFix[0];
 
     cv::gpu::exp(yChan, yChan);
 
@@ -200,13 +211,13 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
 
     // printf("parts2[0] = %d\n", parts2[0].depth());
 
-    printf("imgParts[0].depth = %d\n", imgParts[0].depth());
-    printf("imgParts[1].depth = %d\n", imgParts[1].depth());
+    printf("imgParts[0].depth = %d  channels=%d\n", imgParts[0].depth(), imgParts[0].channels());
+    printf("imgParts[1].depth = %d  channels=%d\n", imgParts[1].depth(), imgParts[1].channels());
 
     //printf("before merge\n");
     cv::gpu::merge(imgParts, output);
 
-    printf("before thresh\n");
+    printf("before thresh  channels = %d   type = %d\n", output.channels(), output.type());
     cv::gpu::threshold(output, output, 215, 220, CV_THRESH_BINARY);
 
     printf("before ret\n");
@@ -365,6 +376,8 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
  * TODO: Periodically send a status update to the Control unit
  * @param host string name of the host with the ip:port number as necessary
  */
+
+static uint64_t numFrames = 0;
 void vis_publisher(ZEDCtxt* ctxt) {
     std::string exchange = exchKeys.gps_exchange;
     std::string key = exchKeys.gps_key;
@@ -381,7 +394,8 @@ void vis_publisher(ZEDCtxt* ctxt) {
 //    start.unlock();
 
     // Turn this into a while(true) loop to keep posting messages
-    while (getRunning() && _iterations < 20) {
+    while (_iterations < 20) {
+        std::cout << "I'm an iteration" << _iterations << std::endl;
         _iterations++;
         auto start = std::chrono::high_resolution_clock::now();
 
@@ -398,11 +412,16 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
         if(RecordFrame(ctxt, gpuFrame, depthMat))
             ProcessFrame(ctxt, gpuFrame, lines);
-        else
+        else {
+            std::cout << "Failed to record " << _iterations << std::endl;
             continue;
-
+        }
         // TODO: populate lat/lon/time
         Lines* obstLines = new Lines(0, 0, 0);
+
+        // BEGIN TEST CODE
+        cv::Mat outMat;
+        // END TEST CODE
 
         for(uint32_t i = 0; i < lines.size(); i++)
         {
@@ -424,6 +443,12 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
             clean[1] = l[1];
             clean[3] = l[3];
+
+            // TEST CODE ONLY -- REMOVE ME 
+
+            cv::line(outMat, cv::Point(clean[0], clean[1]), cv::Point(clean[2], clean[3]), cv::Scalar(255,255,255), 3, CV_AA);
+
+            // END TEST CODE
 
             theta1 = atan((rows-clean[1])/(clean[0]-halfCols));
             endTheta1 = atan((rows-clean[3])/(clean[2]-halfCols));
@@ -451,6 +476,10 @@ void vis_publisher(ZEDCtxt* ctxt) {
             obstLines->addLine(obLine);
         }
 
+        printf("Writing frame: %d\n", numFrames);
+        cv::imwrite("/mnt/data/test_" + std::to_string(numFrames) + ".jpg" , outMat);
+
+        numFrames++;
         // Get gps message here and convert JSON -> GPSMessage -> std::string
         std::string message = "my_message";
         send_message(connection, Processor::encode_lines(*obstLines), linesInfo.header, linesInfo.exchange, linesInfo.key);
