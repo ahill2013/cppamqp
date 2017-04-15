@@ -155,7 +155,7 @@ int32_t RecordFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& recFrame, sl::zed::Mat& dept
     return 0;
 }
 
-cv::gpu::GpuMat HomomorphicFilter(cv::gpu::Mat& input)
+cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
 {
     cv::gpu::GpuMat output;
     cv::gpu::GpuMat outGray;
@@ -167,30 +167,30 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::Mat& input)
     std::vector<cv::gpu::GpuMat> imgParts;
     std::vector<cv::gpu::GpuMat> parts2;
 
-    uint32_t sigma = 10;
+    /*uint32_t sigma = 10;
     uint32_t i = 0;
 
     float lower = 0.5f;
     float upper = 3.0f;
     float threshold = 10.5f;
-    
-    int m1 = cv::gpu::getOptimalDFTSize( input.rows );
-    int n1 = cv::gpu::getOptimalDFTSize( input.cols );
+    */
+    int m1 = cv::getOptimalDFTSize( input.rows );
+    int n1 = cv::getOptimalDFTSize( input.cols );
 
     cv::gpu::cvtColor(input, ycrImg, CV_RGB2YCrCb);
 
     printf("before split\n");
     cv::gpu::split(input, imgParts);
 
-    cv::Mat yChan = imgParts[0];
+    cv::gpu::GpuMat yChan = imgParts[0];
     imgParts[0].convertTo(yChan, CV_32F);
 
     printf("before log\n");
     cv::gpu::log(yChan, yChan);
 
-    cv::gpu::dft(yChan, yChan);
+    cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), 0);
     cv::gpu::Laplacian(yChan, yChan, CV_32F, 3);
-    cv::gpu::dft(yChan, yChan, cv::DFT_INVERSE|cv::DFT_REAL_OUTPUT);
+    cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), cv::DFT_INVERSE|cv::DFT_REAL_OUTPUT);
 
     cv::gpu::exp(yChan, yChan);
 
@@ -228,7 +228,7 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
 
     cv::gpu::GpuMat hommorphicOut = HomomorphicFilter(frame);
 
-    cv::gpu::cvtColor(half, cvImageViewGray, CV_BGRA2GRAY);
+    cv::gpu::cvtColor(cvImageViewGray, cvImageViewGray, CV_BGRA2GRAY);
 
     uint32_t gausCount = 1;
 
@@ -255,9 +255,9 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     // Going to find runs of points in a certain pixel distance from eachother
     // in the x coordinate plane then we'll derive a single point using the average of 
     // the x coordinates and either the longest or a derived direction and length
-    uint8_t runLengthY = 60;
-    uint8_t runLengthX = 50;
-    uint32_t curIndex = 0;
+    //uint8_t runLengthY = 60;
+    //uint8_t runLengthX = 50;
+    //uint32_t curIndex = 0;
 
     cv::vector<cv::Vec4i> houghLines;
     cv::vector<cv::Vec4i> combLines;
