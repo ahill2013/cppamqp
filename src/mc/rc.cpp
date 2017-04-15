@@ -22,6 +22,7 @@
 #define estop 18
 #define channelA 23
 #define channelB 24
+int centa, centb;
 
 struct RCInfo {
     bool f = false;
@@ -117,36 +118,39 @@ void setPWMpin(int pin){
 }
 
 //reads the rc servo signal coming to the pin
-unsigned int readPWM(int pin) {
+int readPWM(int pin) {
 	//waits for and catches peak start
 		while(digitalRead(pin) == 0) {}
-		unsigned int edgeA = micros();
+		int edgeA = micros();
 
 		//waits for and catches peak end
 		while(digitalRead(pin) == 1) {}
-		unsigned int edgeB = micros();
+		int edgeB = micros();
 
 		//calculates the length of the peak and returns it
 		return edgeB-edgeA;
 }
 
 void rcControl(){
-	unsigned int stop, chA, chB;  //peak time in microseconds
-	double vmax = 2.0, wmax = 2.0;
+//        std::cout << "Got RC Value" << std::endl;
+	int stop, chA, chB;  //peak time in microseconds
+	double vmax = 1.0, wmax = 1.0;
     double w, v;
-	unsigned int time = 10000;
+
 	
 	stop = readPWM(estop);
 	chA = readPWM(channelA);
 	chB = readPWM(channelB);
 	// constants for equation motions will change
-	w = wmax*(chA-1360)/400;
-	v = vmax*(chB-1490)/400;
+	w = wmax*(chA-centa)/400;
+	v = vmax*(chB-centb)/400;
+	if(w<.015 && w>-.015){w=0;}
+	if(v<.015 && v>-.015){v = 0;}
 
 //    v = 1.1;
 //    w = 0.25;
 
-    stop = 1800;
+//    stop = 1800;
     setLinear(v);
     setAngular(w);
 		
@@ -234,7 +238,7 @@ void interupt1(){
     _mutexes.commands.lock();
 
     Command* toSend = nullptr;
-    if (!getFlag) {
+    if (!getFlag()) {
 
         if (_data.commands != nullptr) {
             std::cout << "Pulling command" << std::endl;
@@ -248,7 +252,7 @@ void interupt1(){
     } else {
         toSend = new Command(getLinear(), getAngular(), 0, 0, 0, 1);
     }
-    std::cout << toSend->angvel << std::endl;
+//    std::cout << toSend->angvel << std::endl;
 
     _mutexes.commands.unlock();
 
@@ -321,7 +325,7 @@ void mc_subscriber(std::string host) {
 //    start.lock();
     MessageHeaders headers1;
 
-    std::string coepernica_host = "amqp://" + host;
+    std::string coepernica_host = "amqp://192.168.11.4";
 
     std::string queue = exchKeys.mc_sub;
 
@@ -389,57 +393,58 @@ void mc_subscriber(std::string host) {
 
 void mc_handler(std::string host) {
 
-    //AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("localhost");
+
+    AmqpClient::Channel::ptr_t connection = AmqpClient::Channel::Create("192.168.11.4");
 
 
-    //for (auto const& kv : exchKeys.declared) {
-    //    setup_exchange(connection, kv.first, kv.second);
-    //}
+    for (auto const& kv : exchKeys.declared) {
+        setup_exchange(connection, kv.first, kv.second);
+    }
+/**
+    start.lock();
+    start.unlock();
 
-    //start.lock();
-    //start.unlock();
+    int uart0_filestream =-1;
 
-//    int uart0_filestream =-1;
-//
-//    pinMode (SYNC,INPUT);
-//    pinMode (SYNC2,OUTPUT);
-//    pinMode (SYNC3,INPUT);
-//    digitalWrite(SYNC2,LOW);
-//    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
-
+    pinMode (SYNC,INPUT);
+    pinMode (SYNC2,OUTPUT);
+    pinMode (SYNC3,INPUT);
+    digitalWrite(SYNC2,LOW);
+    wiringPiISR(SYNC, INT_EDGE_RISING,&interupt1);
+**/
     while(getRunning()){
         std::this_thread::sleep_for(std::chrono::milliseconds(2000));
         std::cout << "Motor control is alive" << std::endl;
 
 //        std::cout << "Motor control running" << std::endl;
 
-//        _mutexes.commands.lock();
-//
-//        Command* toSend = nullptr;
-//
-//        if (!getFlag()) {
-//            if (_data.commands != nullptr) {
-//                std::cout << "Pulling command" << std::endl;
-//                toSend = _data.commands->remove();
-//            }
-//
-//            if (toSend == nullptr) {
-//                std::cout << "Using default command" << std::endl;
-//                toSend = _data.command;
-//            }
-//        } else {
-//            toSend = new Command(getLinear(), getAngular(), 0, 0, 0, 1);
-//        }
-//
-//        std::cout << toSend->angvel << std::endl;
-//        std::cout << toSend->linvel << std::endl;
-//
-//        _mutexes.commands.unlock();
+ //       _mutexes.commands.lock();
+/**
+        Command* toSend = nullptr;
 
+        if (!getFlag()) {
+            if (_data.commands != nullptr) {
+                std::cout << "Pulling command" << std::endl;
+                toSend = _data.commands->remove();
+            }
 
-//        Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
-//        std::string status_mess = Processor::encode_status(*status);
-//        send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
+            if (toSend == nullptr) {
+                std::cout << "Using default command" << std::endl;
+                toSend = _data.command;
+            }
+        } else {
+            toSend = new Command(getLinear(), getAngular(), 0, 0, 0, 1);
+        }
+
+        std::cout << toSend->angvel << std::endl;
+        std::cout << toSend->linvel << std::endl;
+
+        _mutexes.commands.unlock();
+**/
+        Status *status = new Status(exchKeys.GPS, getRunning(), "normal");
+        std::string status_mess = Processor::encode_status(*status);
+        send_message(connection, status_mess, statusInfo.header, statusInfo.exchange, statusInfo.key);
+	std::cout << "Sent status" << std::endl;
     }
 
 }
@@ -449,19 +454,24 @@ void mc_handler(std::string host) {
 void rcInput() {
 	//sets up wiringPi and pins
 	// wiringPiSetupGpio(); Duplicate
-//	setPWMpin(estop);
-//	setPWMpin(channelA);
-//	setPWMpin(channelB);
+	setPWMpin(estop);
+	setPWMpin(channelA);
+	setPWMpin(channelB);
 	
 	//rc control code runs in this function
 	//currently never will stop, needs something here.
+	//calibration in for loop below.
+	for(int z = 0; z< 10; z++){
+		centa = readPWM(channelA);
+		centb = readPWM(channelB);
+	}
     int i = 0;
-	while(i < 200) {
+	while(1) {
 		rcControl();
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         i++;
 	}
-    setFlag(false);
+    // setFlag(false);
     std::cout << "SET FALSE SET FALSE SET FALSE" << std::endl;
 }
 
