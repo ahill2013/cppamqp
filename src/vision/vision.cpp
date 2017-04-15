@@ -389,6 +389,13 @@ void vis_publisher(ZEDCtxt* ctxt) {
         cv::gpu::GpuMat gpuFrame;
         cv::vector<cv::Vec4i> lines;
 
+        uint32_t cols = gpuFrame.cols;
+        uint32_t rows = gpuFrame.rows;
+        uint32_t halfCols = gpuFrame.cols/2;
+
+        double theta1 = 0.0;
+        double endTheta1 = 0.0;
+
         if(RecordFrame(ctxt, gpuFrame, depthMat))
             ProcessFrame(ctxt, gpuFrame, lines);
         else
@@ -402,19 +409,44 @@ void vis_publisher(ZEDCtxt* ctxt) {
             cv::Vec4i l = lines[i];
             Line obLine;
 
-            obLine.beginX = l[0];
-            obLine.endX = l[2];
+            cv::Vec4i clean;
+            uint32_t realX = 0;
+            uint32_t realY = 0;
 
-            sl::uchar3 d = depthMat.getValue(l[0], l[1]);
+            double beginActR = 0.0;
+            double endActR = 0.0;
+
+            if(l[0] > halfCols)
+            {
+                clean[0] = (l[0]-halfCols)-20;
+                clean[2] = (l[2]-halfCols)-20;
+            }
+
+            clean[1] = l[1];
+            clean[3] = l[3];
+
+            theta1 = atan((rows-clean[1])/(clean[0]-halfCols));
+            endTheta1 = atan((rows-clean[3])/(clean[2]-halfCols));
+
+            // obLine.beginX = clean[0];
+            // obLine.endX = clean[2];
+
+            sl::uchar3 p1 = depthMat.getValue(l[0], l[1]);
+            sl::uchar3 p2 = depthMat.getValue(l[2], l[3]);
 
             // Need to update the y coordinate with the depth map
 
-            printf("depth @ x %d  y  %d: %d %d %d", l[0], l[1], d.c1, d.c2, d.c3);
+            //printf("depth @ x %d  y  %d: %d %d %d", l[0], l[1], d.c1, d.c2, d.c3);
 
             // depth map returns in millimeters we want 10cm increments so /100
-            obLine.beginY = cos(cameraAngle)* (d.c1/ 100);
-            d = depthMat.getValue(l[2], l[3]);
-            obLine.endY = cos(cameraAngle) * (d.c1/100);
+            beginActR = sin(cameraAngle) * (p1.c1/100);
+            endActR = sin(cameraAngle) * (p2.c1/100);
+
+            obLine.beginY = beginActR * sin(theta1);
+            obLine.endY = endActR * sin(endTheta1);
+
+            obLine.beginX = beginActR * cos(theta1);
+            obLine.endX = endActR * cos(endTheta1);
 
             obstLines->addLine(obLine);
         }
