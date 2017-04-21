@@ -52,8 +52,9 @@ struct StatusPublish {
 } statusInfo;
 
 // Mutexes to protect global data
-
+static uint64_t numFrames = 0;
 static double cameraAngle = 45.0;
+
 struct Data {
     bool running = true;
     double interval = 0.1; // 10 per second equates to approximately 10fps, perhaps less with calculation times
@@ -163,11 +164,12 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
     cv::gpu::GpuMat tmp;
 
     cv::gpu::GpuMat ycrImg;//(input.size(), CV_32FC3);
+    cv::gpu::GpuMat yOneChan(input.size(), CV_32FC1);
 
     std::vector<cv::gpu::GpuMat> imgParts;
     std::vector<cv::gpu::GpuMat> parts2;
 
-    std::vector<cv::gpu::GpuMat> dftFix;
+    //std::vector<cv::gpu::GpuMat> dftFix;
 
     /*uint32_t sigma = 10;
     uint32_t i = 0;
@@ -182,43 +184,73 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
     cv::gpu::cvtColor(input, ycrImg, CV_RGB2YCrCb);
 
     printf("before split\n");
-    cv::gpu::split(input, imgParts);
+    cv::gpu::split(ycrImg, imgParts);
+
+    printf("after split num channels = %d\n", imgParts.size());
 
     cv::gpu::GpuMat yChan = imgParts[0];
-    imgParts[0].convertTo(yChan, CV_32F);
+    imgParts[0].convertTo(yChan, CV_32FC1);
 
     printf("before log\n");
     cv::gpu::log(yChan, yChan);
 
     printf("before dft n1 = %d  m1 = %d ychan channels = %d\n", n1, m1, yChan.channels());
-    cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), 0);
-    cv::gpu::split(yChan, dftFix);
-    yChan = dftFix[0];
+    cv::gpu::dft(yOneChan, yChan, cv::Size(n1, m1), 0);
+    printf("yOneChan after first dft channels = %d\n", yOneChan.channels());
+    //cv::gpu::split(yChan, dftFix);
+    //yChan = dftFix[0];
+    yChan = yOneChan;
     printf("before laplacian\n");
     printf("ychan channels = %d\n", yChan.channels());
     cv::gpu::Laplacian(yChan, yChan, CV_32F, 3);
     printf("before inverse dft yChan channels = %d\n", yChan.channels());
-    cv::gpu::dft(yChan, yChan, cv::Size(n1, m1), cv::DFT_INVERSE);//|cv::DFT_REAL_OUTPUT);
-    cv::gpu::split(yChan, dftFix);
+    cv::gpu::dft(yOneChan, yChan, cv::Size(n1, m1), cv::DFT_INVERSE);//|cv::DFT_REAL_OUTPUT);
+    //cv::gpu::split(yChan, dftFix);
+    yChan = yOneChan;
 
-    yChan = dftFix[0];
+    printf("yOneChan after second dft num chans = %d\n", yOneChan.channels());
+
+    //yChan = dftFix[0];
+
+    //printf("dftFix[0].size().width() = %d\n", dftFix[0].size().width);
+    //printf("dftFix[1].size().width() = %d\n", dftFix[1].size().width);
 
     cv::gpu::exp(yChan, yChan);
 
     cv::gpu::split(yChan, parts2);
 
-    parts2[0].convertTo(imgParts[0], CV_8U);//imgParts[0] = parts2[0];
+    parts2[0].convertTo(imgParts[0], CV_8UC1);//imgParts[0] = parts2[0];
 
     // printf("parts2[0] = %d\n", parts2[0].depth());
 
     printf("imgParts[0].depth = %d  channels=%d\n", imgParts[0].depth(), imgParts[0].channels());
     printf("imgParts[1].depth = %d  channels=%d\n", imgParts[1].depth(), imgParts[1].channels());
 
+    cv::Size tmpsz = imgParts[0].size();
+
+    printf("tmpsz[0] = %d   tmpsz[1] = %d\n", tmpsz.width, tmpsz.height);
+
+    tmpsz = imgParts[1].size();
+
+    printf("w = %d h = %d\n", tmpsz.width, tmpsz.height);
+    
+    tmpsz = imgParts[2].size();
+
+    printf("w = %d h = %d\n", tmpsz.width, tmpsz.height);
+
+    for(uint32_t i = 0; i < imgParts.size(); i++)
+    {
+        printf("parts %d  channels = %d  type = %d width = %d height = %d\n", i, imgParts[i].channels(), imgParts[i].type(), imgParts[i].size().width, imgParts[i].size().height);
+        cv::gpu::threshold(imgParts[i], imgParts[i], 215, 220, CV_THRESH_BINARY);
+    }
+
     //printf("before merge\n");
     cv::gpu::merge(imgParts, output);
 
+    cv::gpu::cvtColor(output,output, CV_YCrCb2BGR);
+
     printf("before thresh  channels = %d   type = %d\n", output.channels(), output.type());
-    cv::gpu::threshold(output, output, 215, 220, CV_THRESH_BINARY);
+    //cv::gpu::threshold(output, output, 215, 220, CV_THRESH_BINARY);
 
     printf("before ret\n");
 
@@ -237,15 +269,28 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     cv::gpu::GpuMat half;// = frame.colRange(0, frame.cols/2);
     cv::gpu::GpuMat afterGaus;
 
-    cv::gpu::GpuMat hommorphicOut = HomomorphicFilter(frame);
+    cv::gpu::GpuMat homomorphicOut = HomomorphicFilter(frame);
 
-    cv::gpu::cvtColor(cvImageViewGray, cvImageViewGray, CV_BGRA2GRAY);
+    printf("homomorphic out channels = %d\n", homomorphicOut.channels());
+    cv::gpu::cvtColor(homomorphicOut, cvImageViewGray, CV_BGR2GRAY);
+/*
+    std::vector<cv::gpu::GpuMat> threshParts;
 
+    cv::gpu::split(cvImageViewGray, threshParts);
+
+    for(uint32_t i = 0; i < threshParts.size(); i++)
+    {
+        printf("parts %d channels = %d type = %d width = %d height = %d\n", i, threshParts[i].channels(), threshParts[i].type(), threshParts[i].size().width, threshParts[i].size().height);
+        cv::gpu::threshold(threshParts[i], threshParts[i], 215, 220, CV_THRESH_BINARY);
+    }
+*/
     uint32_t gausCount = 1;
+
+    afterGaus = cvImageViewGray;
 
     for(uint32_t i = 0; i < gausCount; i++)
     {
-        cv::gpu::GaussianBlur(half, afterGaus, cv::Size(11,11), 0, 0, cv::BORDER_DEFAULT);
+        cv::gpu::GaussianBlur(afterGaus, afterGaus, cv::Size(11,11), 0, 0, cv::BORDER_DEFAULT);
     }
 
     cv::gpu::GpuMat cvEdges(rows, cols, CV_8UC3);
@@ -278,6 +323,10 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
 
     cv::Mat houghDl(1, houghOut.cols, CV_8UC3, &houghLines[0]);
     houghOut.download(houghDl);
+
+    printf("lines = %d\n", houghLines.size());
+
+    outLines = houghLines;
 
     /*while(true)
     {
@@ -377,7 +426,6 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
  * @param host string name of the host with the ip:port number as necessary
  */
 
-static uint64_t numFrames = 0;
 void vis_publisher(ZEDCtxt* ctxt) {
     std::string exchange = exchKeys.gps_exchange;
     std::string key = exchKeys.gps_key;
@@ -435,6 +483,8 @@ void vis_publisher(ZEDCtxt* ctxt) {
             double beginActR = 0.0;
             double endActR = 0.0;
 
+            printf("line %d\n", i);
+
             if(l[0] > halfCols)
             {
                 clean[0] = (l[0]-halfCols)-20;
@@ -477,7 +527,7 @@ void vis_publisher(ZEDCtxt* ctxt) {
         }
 
         printf("Writing frame: %d\n", numFrames);
-        cv::imwrite("/mnt/data/test_" + std::to_string(numFrames) + ".jpg" , outMat);
+        cv::imwrite("/home/ubuntu/visiontest/test_" + std::to_string(numFrames) + ".jpg" , outMat);
 
         numFrames++;
         // Get gps message here and convert JSON -> GPSMessage -> std::string
