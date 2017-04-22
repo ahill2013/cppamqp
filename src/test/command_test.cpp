@@ -2,6 +2,8 @@
 #include "../../include/processor.h"
 #include <stdio.h>
 
+// DEPRECATED DO NOT USE
+
 MessageHeaders headers;
 ExchKeys exchKeys;
 

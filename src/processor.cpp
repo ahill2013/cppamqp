@@ -16,25 +16,40 @@ void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.String("lon");
     writer.Double(lon);
 
+    writer.String("linvel");
+    writer.Double(linvel);
+
+    writer.String("angvel");
+    writer.Double(angvel);
+
     writer.String("time");
-    writer.String(time.c_str(), static_cast<SizeType>(time.length()));
+    writer.Uint64(time);
 
     writer.EndObject();
 }
 
-GPSMessage::GPSMessage(Document &d, bool preprocessed) {
-    if (preprocessed) {
+GPSMessage::GPSMessage(Document &d) {
+//    if (preprocessed) {
         std::cout << "Preprocessed" << std::endl;
 
         lat = GetValueByPointer(d, "/lat")->GetDouble();
         lon = GetValueByPointer(d, "/lon")->GetDouble();
-        time = GetValueByPointer(d, "/time")->GetString();
-    } else {
-        lat = GetValueByPointer(d, "/data/lat")->GetDouble();
-        lon = GetValueByPointer(d, "/data/lon")->GetDouble();
-        time = d["time"].GetString();
-    }
+        time = GetValueByPointer(d, "/time")->GetUint64();
+        linvel = GetValueByPointer(d, "/linvel")->GetDouble();
+        angvel = GetValueByPointer(d, "/angvel")->GetDouble();
+//    } else {
+//        lat = GetValueByPointer(d, "/data/lat")->GetDouble();
+//        lon = GetValueByPointer(d, "/data/lon")->GetDouble();
+//        time = d["time"].GetString();
+//    }
+}
 
+GPSMessage::GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t time) {
+    this->lat = lat;
+    this->lon = lon;
+    this->linvel = linvel;
+    this->angvel = angvel;
+    this->time = time;
 }
 
 GPSMessage::~GPSMessage() = default;

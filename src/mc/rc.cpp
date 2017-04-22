@@ -364,7 +364,7 @@ void mc_subscriber(std::string host) {
 
 
         } else if (header == headers1.WGPSFRAME) {
-            GPSMessage* gpsMessage = Processor::decode_gps(message.message(), true);
+            GPSMessage* gpsMessage = Processor::decode_gps(message.message());
             setGPS(gpsMessage);
             // Code to send GPS?
         } else if (header == headers1.WCLOSE) {

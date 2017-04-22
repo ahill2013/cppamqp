@@ -13,21 +13,21 @@ int main() {
             "After placing the message into a document we shall decode it into a GPSMessage, which we will use. Then we"
             "will re-encode that information into an actual JSON GPSMessage and send it to be used by someone else.";
 
-    std::cout << demo_mess << std::endl;
+//    std::cout << demo_mess << std::endl;
+//
+//
+//    std::string message ="{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
+//            "\"tow\": 478500, \"crc\": 54878, \"length\": 11, \"flags\": 0, \"ns\": 0, \"preamble\": 85, "
+//            "\"payload\": \"+wYkTQcAAAAAAAA=\", \"lon\": -122.17203108848562, \"lat\": 37.430193934253346},"
+//            " \"time\": \"2016-10-13T21:49:54.208732\"}";
 
 
-    std::string message ="{\"data\": {\"sender\": 13881, \"msg_type\": 256, \"wn\": 1787, "
-            "\"tow\": 478500, \"crc\": 54878, \"length\": 11, \"flags\": 0, \"ns\": 0, \"preamble\": 85, "
-            "\"payload\": \"+wYkTQcAAAAAAAA=\", \"lon\": -122.17203108848562, \"lat\": 37.430193934253346},"
-            " \"time\": \"2016-10-13T21:49:54.208732\"}";
-
-
-    std::cout << "\nORIGINAL RTK MESSAGE" << std::endl;
-    std::cout << message << std::endl;
+//    std::cout << "\nORIGINAL RTK MESSAGE" << std::endl;
+//    std::cout << message << std::endl;
 
     // Place the document into a string
-    Document d;
-    d.Parse(message.c_str());
+//    Document d;
+//    d.Parse(message.c_str());
 
 //    std::cout << message.c_str() << std::endl;
 //    std::cout << "Here" << std::endl;
@@ -37,30 +37,35 @@ int main() {
     // 1) Create a string buffer or empty an already existing string buffer
     // 2) Assign the buffer to a Writer
     // 3) Add the writer to the RapidJSON Document
-    StringBuffer buffer;
-    buffer.Clear(); // Empty the buffer
-    Writer<StringBuffer> writer(buffer); // Assign the buffer to a RapidJSON Writer
-    d.Accept(writer); // Add the Writer to the document
-
+//    StringBuffer buffer;
+//    buffer.Clear(); // Empty the buffer
+//    Writer<StringBuffer> writer(buffer); // Assign the buffer to a RapidJSON Writer
+//    d.Accept(writer); // Add the Writer to the document
+//
     std::cout.precision(12); // Set decimal precision. Numbers are right but it doesn't show up when you print always
 
     std::cout << "\nRTK MESSAGE PARSED INTO GPS MESSAGE" << std::endl;
-    GPSMessage* gpsMessage = Processor::decode_gps(message, false);
+
+    GPSMessage* gpsMessage = new GPSMessage(10.0, -10.0, 1.0, -1.0, 111111111);
     printf("Lat: %.10f\n", gpsMessage->lat);
     printf("Lon: %.10f\n", gpsMessage->lon);
-    printf("Time: %s\n", gpsMessage->time.c_str()); // Insecure, I know
+    printf("Linvel: %.10f\n", gpsMessage->linvel);
+    printf("Angvel: %.10f\n", gpsMessage->angvel);
+    printf("Time: %ld\n", gpsMessage->time); // Insecure, I know
 
 
     std::cout << "\nENCODED INTO GPSMESSAGE TO BE USED BY MOTORS, NAV, ETC." << std::endl;
     std::string encoded = Processor::encode_gps(*gpsMessage);
     std::cout << encoded << std::endl;
 
-    GPSMessage* gpsMessage1 = Processor::decode_gps(encoded, true);
+    GPSMessage* gpsMessage1 = Processor::decode_gps(encoded);
 
     std::cout << "\nDECODED INTO GPSMESSAGE CLASS" << std::endl;
 //    std::cout << encoded << std::endl;
     std::cout << "Lat: " << gpsMessage1->lat << std::endl;
     std::cout << "Lon: " << gpsMessage1->lon << std::endl;
+    std::cout << "Linvel: " << gpsMessage1->linvel << std::endl;
+    std::cout << "Angvel: " << gpsMessage1->angvel << std::endl;
     std::cout << "Time: " << gpsMessage1->time << std::endl;
 
 

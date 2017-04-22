@@ -22,12 +22,13 @@ public:
     double linacc;
     double angvel;
     double angacc;
-    std::string time;
+    uint64_t time;
     bool ins;
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
-    GPSMessage(rapidjson::Document& d, bool);
+    GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t numTime);
+    GPSMessage(rapidjson::Document& d);
     ~GPSMessage();
 };
 
@@ -164,10 +165,10 @@ namespace Processor {
         return buffer.GetString();
     }
 
-    static GPSMessage *decode_gps(std::string to_decode, bool preprocessed) {
+    static GPSMessage *decode_gps(std::string to_decode) {
         rapidjson::Document d;
         d.Parse(to_decode.c_str());
-        return new GPSMessage(d, preprocessed);
+        return new GPSMessage(d);
     }
 
     static Interval *decode_interval(std::string to_decode) {

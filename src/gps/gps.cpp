@@ -2,6 +2,8 @@
 #include <myamqp/processor.h>
 #include <stdio.h>
 
+// DEPRECATED WORKS BUT NOT HOW THINGS ARE DONE
+
 using namespace rapidjson;
 
 MessageHeaders headers;

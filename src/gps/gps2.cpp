@@ -2,6 +2,8 @@
 #include "../../include/processor.h"
 #include <stdio.h>
 
+// DO NOT USE WORKS NOT HOW IT IS DONE NOW
+
 MessageHeaders headers;
 ExchKeys exchKeys;
 
