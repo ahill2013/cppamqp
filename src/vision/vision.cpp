@@ -52,6 +52,7 @@ struct StatusPublish {
 } statusInfo;
 
 // Mutexes to protect global data
+static std::string pathName = "/home/ubuntu/visiontest/"
 static uint64_t numFrames = 0;
 static double cameraAngle = 45.0;
 
@@ -249,6 +250,11 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
 
     cv::gpu::cvtColor(output,output, CV_YCrCb2BGR);
 
+    cv::Mat dl;
+
+    output.download(dl);
+    cv::imwrite(pathName + "afterhomomorphic_" + to_string(numFrames) + ".jpg" , output);
+
     printf("before thresh  channels = %d   type = %d\n", output.channels(), output.type());
     //cv::gpu::threshold(output, output, 215, 220, CV_THRESH_BINARY);
 
@@ -273,6 +279,12 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
 
     printf("homomorphic out channels = %d\n", homomorphicOut.channels());
     cv::gpu::cvtColor(homomorphicOut, cvImageViewGray, CV_BGR2GRAY);
+
+
+    cv::Mat dl;
+
+    cvImageViewGray.download(dl);
+    cv::imwrite(pathName + "gray_" + to_string(numFrames) + ".jpg" , cvImageViewGray);
 /*
     std::vector<cv::gpu::GpuMat> threshParts;
 
@@ -292,6 +304,9 @@ void ProcessFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& frame, cv::vector<cv::Vec4i>& 
     {
         cv::gpu::GaussianBlur(afterGaus, afterGaus, cv::Size(11,11), 0, 0, cv::BORDER_DEFAULT);
     }
+
+    afterGaus.download(dl);
+    cv::imwrite(pathName + "gaussian_" + to_string(numFrames) + ".jpg" , afterGaus);
 
     cv::gpu::GpuMat cvEdges(rows, cols, CV_8UC3);
 
@@ -527,7 +542,7 @@ void vis_publisher(ZEDCtxt* ctxt) {
         }
 
         printf("Writing frame: %d\n", numFrames);
-        cv::imwrite("/home/ubuntu/visiontest/test_" + std::to_string(numFrames) + ".jpg" , outMat);
+        cv::imwrite(pathName + "test_" + std::to_string(numFrames) + ".jpg" , outMat);
 
         numFrames++;
         // Get gps message here and convert JSON -> GPSMessage -> std::string
