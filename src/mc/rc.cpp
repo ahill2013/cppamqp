@@ -142,10 +142,10 @@ void rcControl(){
 	chA = readPWM(channelA);
 	chB = readPWM(channelB);
 	// constants for equation motions will change
-	w = wmax*(chA-centa)/400;
+	w = -wmax*(chA-centa)/400;
 	v = vmax*(chB-centb)/400;
-	if(w<.015 && w>-.015){w=0;}
-	if(v<.015 && v>-.015){v = 0;}
+	if(w<.05 && w>-.05){w=0;}
+	if(v<.05 && v>-.05){v = 0;}
 
 //    v = 1.1;
 //    w = 0.25;
