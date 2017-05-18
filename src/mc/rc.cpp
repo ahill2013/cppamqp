@@ -22,6 +22,7 @@
 #define estop 18
 #define channelA 23
 #define channelB 24
+#define light 25
 int centa, centb;
 
 struct RCInfo {
@@ -475,6 +476,23 @@ void rcInput() {
     std::cout << "SET FALSE SET FALSE SET FALSE" << std::endl;
 }
 
+//need LED and 330 ohm resistor assigned to pin 25 on pi.
+void modeLight(){
+	pinMode (light, OUTPUT) ;
+	while(1){
+		if(getFlag()){
+			digitalWrite (0, HIGH) ; 
+			delay (500) ;
+		}
+		else {
+			digitalWrite (0, HIGH) ; 
+			delay (500) ;
+			digitalWrite (0,  LOW) ; 
+			delay (500) ;
+		}
+	}
+}
+
 TCLAP::CmdLine cmd("Motor control client code", ' ', "0.0");
 TCLAP::ValueArg<std::string> ipArg("i","ip", "IP RabbitMQ-Server lives on", false, "amqp://localhost", "string");
 TCLAP::SwitchArg motorsArg("m", "motors", "myrio connected", cmd, false);
@@ -510,10 +528,11 @@ int main(int argc, char** argv) {
 
     std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	std::thread remote(rcInput); //is this correct for making thread, YES
-
+	std::thread blink(modeLight);
 
     sub.join();
     pub.join();
 	remote.join();
+	blink.join();
 
 }
