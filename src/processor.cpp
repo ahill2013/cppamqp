@@ -25,6 +25,9 @@ void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.String("time");
     writer.Uint64(time);
 
+    writer.String("heading");
+    writer.Double(heading);
+
     writer.EndObject();
 }
 
@@ -37,6 +40,7 @@ GPSMessage::GPSMessage(Document &d) {
         time = GetValueByPointer(d, "/time")->GetUint64();
         linvel = GetValueByPointer(d, "/linvel")->GetDouble();
         angvel = GetValueByPointer(d, "/angvel")->GetDouble();
+        heading = GetValueByPointer(d, "/heading")->GetDouble();
 //    } else {
 //        lat = GetValueByPointer(d, "/data/lat")->GetDouble();
 //        lon = GetValueByPointer(d, "/data/lon")->GetDouble();
@@ -44,12 +48,13 @@ GPSMessage::GPSMessage(Document &d) {
 //    }
 }
 
-GPSMessage::GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t time) {
+GPSMessage::GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t time, double heading) {
     this->lat = lat;
     this->lon = lon;
     this->linvel = linvel;
     this->angvel = angvel;
     this->time = time;
+    this->heading = heading;
 }
 
 GPSMessage::~GPSMessage() = default;

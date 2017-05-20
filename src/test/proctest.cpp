@@ -46,12 +46,13 @@ int main() {
 
     std::cout << "\nRTK MESSAGE PARSED INTO GPS MESSAGE" << std::endl;
 
-    GPSMessage* gpsMessage = new GPSMessage(10.0, -10.0, 1.0, -1.0, 111111111);
+    GPSMessage* gpsMessage = new GPSMessage(10.0, -10.0, 1.0, -1.0, 111111111, 1.73);
     printf("Lat: %.10f\n", gpsMessage->lat);
     printf("Lon: %.10f\n", gpsMessage->lon);
     printf("Linvel: %.10f\n", gpsMessage->linvel);
     printf("Angvel: %.10f\n", gpsMessage->angvel);
-    printf("Time: %ld\n", gpsMessage->time); // Insecure, I know
+    printf("Time: %ld\n", gpsMessage->time);
+    printf("Heading: %f\n", gpsMessage->heading);
 
 
     std::cout << "\nENCODED INTO GPSMESSAGE TO BE USED BY MOTORS, NAV, ETC." << std::endl;
@@ -67,7 +68,7 @@ int main() {
     std::cout << "Linvel: " << gpsMessage1->linvel << std::endl;
     std::cout << "Angvel: " << gpsMessage1->angvel << std::endl;
     std::cout << "Time: " << gpsMessage1->time << std::endl;
-
+    std::cout << "Heading: " << gpsMessage1->heading << std::endl;
 
 
     long time = 100010001000001;

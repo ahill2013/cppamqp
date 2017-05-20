@@ -24,10 +24,11 @@ public:
     double angacc;
     uint64_t time;
     bool ins;
+    double heading;
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
-    GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t numTime);
+    GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t numTime, double heading);
     GPSMessage(rapidjson::Document& d);
     ~GPSMessage();
 };
