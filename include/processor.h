@@ -67,7 +67,7 @@ public:
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
     void addObstacle(Obstacle&);
-
+    int size();
     Obstacles(double lat, double lon, uint64_t time);
     ~Obstacles();
 };

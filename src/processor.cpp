@@ -165,6 +165,10 @@ void Obstacles::addObstacle(Obstacle& obstacle) {
     obstacles->push_back(obstacle);
 }
 
+int Obstacles::size() {
+    return obstacles->size();
+}
+
 
 Obstacles::~Obstacles() {
     delete obstacles;
