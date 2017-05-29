@@ -23,7 +23,7 @@ CXXFLAGS=-Wall $(DEBUG) -std=c++11 $(INCLUDE)
 LDLIBS= -lamqpcpp -lev -lpthread -lSimpleAmqpClient -lrabbitmq -lCommFrame
 
 
-all: gps test vision
+all: test vision
 
 test: $(TEST)
 	$(CC) $(CXXFLAGS) $(TEST) -o bin/test $(LDLIBS)
