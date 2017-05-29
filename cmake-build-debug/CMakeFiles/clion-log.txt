@@ -1,1 +1,1 @@
-CMakeLists.txt not found in /home/igvc/Desktop/igvc/cppamqp
+CMakeLists.txt not found in /home/igvc/Desktop/cppamqp

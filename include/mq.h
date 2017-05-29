@@ -63,6 +63,9 @@ struct ExchKeys {
     std::string vision_exchange = "vision_exchange";
     std::string vision_key = "vision_key";
 
+    std::string lidar_exchange = "lidar_exchange";
+    std::string lidar_key = "lidar_key";
+
     std::string control_exchange = "control_exchange";
     std::string control_key = "control_key";
 
@@ -79,7 +82,7 @@ struct ExchKeys {
 
     std::map<std::string,std::string> declared = {{gps_exchange, FANOUT}, {mc_exchange, TOPIC},
                                                   {control_exchange, TOPIC}, {nav_exchange, TOPIC},
-                                                  {vision_exchange, TOPIC}};
+                                                  {vision_exchange, TOPIC}, {lidar_exchange, TOPIC}};
 
 };
 

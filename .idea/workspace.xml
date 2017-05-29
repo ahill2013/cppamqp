@@ -11,16 +11,10 @@
   <component name="ChangeListManager">
     <list default="true" id="0aa5d27c-484e-4241-90f2-c39dcbc94cd0" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Makefile" afterPath="$PROJECT_DIR$/Makefile" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/mq.h" afterPath="$PROJECT_DIR$/include/mq.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/include/processor.h" afterPath="$PROJECT_DIR$/include/processor.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gps/gps.cpp" afterPath="$PROJECT_DIR$/src/gps/gps.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/gps/gps2.cpp" afterPath="$PROJECT_DIR$/src/gps/gps2.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/mc/rc.cpp" afterPath="$PROJECT_DIR$/src/mc/rc.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/processor.cpp" afterPath="$PROJECT_DIR$/src/processor.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/command_test.cpp" afterPath="$PROJECT_DIR$/src/test/command_test.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/nav.cpp" afterPath="$PROJECT_DIR$/src/test/nav.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/proctest.cpp" afterPath="$PROJECT_DIR$/src/test/proctest.cpp" />
     </list>
     <ignored path="CPPFrame.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -55,17 +49,7 @@
         <entry file="file://$PROJECT_DIR$/src/processor.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1020">
-              <caret line="51" column="22" lean-forward="false" selection-start-line="51" selection-start-column="22" selection-end-line="51" selection-end-column="22" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="nav.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/nav.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="80">
-              <caret line="4" column="40" lean-forward="false" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
+              <caret line="51" column="20" lean-forward="false" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
               <folding />
             </state>
           </provider>
@@ -91,11 +75,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rc.cpp" pinned="false" current-in-tab="true">
+      <file leaf-file-name="rc.cpp" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mc/rc.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="920">
               <caret line="46" column="13" lean-forward="false" selection-start-line="46" selection-start-column="13" selection-end-line="46" selection-end-column="13" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mq.h" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/include/mq.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="41" column="33" lean-forward="false" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -178,15 +172,14 @@
         <option value="$PROJECT_DIR$/src/command_test.cpp" />
         <option value="$PROJECT_DIR$/src/gps2.cpp" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/../../assign1.cpp" />
+        <option value="$USER_HOME$/assign1.cpp" />
         <option value="$PROJECT_DIR$/src/test/nav.cpp.cpp" />
         <option value="$PROJECT_DIR$/src/mq.cpp" />
         <option value="$PROJECT_DIR$/src/test/visual_test.cpp" />
         <option value="$PROJECT_DIR$/src/vision/vision.cpp" />
         <option value="$PROJECT_DIR$/.idea/testcli.cpp" />
         <option value="$PROJECT_DIR$/testcli.cpp" />
-        <option value="$PROJECT_DIR$/include/mq.h" />
-        <option value="$PROJECT_DIR$/../../mcrcPi.cpp" />
+        <option value="$USER_HOME$/mcrcPi.cpp" />
         <option value="$PROJECT_DIR$/Makefile" />
         <option value="$PROJECT_DIR$/src/mc/mc.cpp" />
         <option value="$PROJECT_DIR$/src/mc/testrc.cpp" />
@@ -199,6 +192,7 @@
         <option value="$PROJECT_DIR$/include/processor.h" />
         <option value="$PROJECT_DIR$/src/processor.cpp" />
         <option value="$PROJECT_DIR$/src/test/proctest.cpp" />
+        <option value="$PROJECT_DIR$/include/mq.h" />
       </list>
     </option>
   </component>
@@ -209,10 +203,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="65" />
-    <option name="y" value="24" />
-    <option name="width" value="1299" />
-    <option name="height" value="744" />
+    <option name="x" value="64" />
+    <option name="y" value="-11" />
+    <option name="width" value="1217" />
+    <option name="height" value="732" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -537,6 +531,10 @@
       <workItem from="1492826973050" duration="717000" />
       <workItem from="1492869321324" duration="2597000" />
       <workItem from="1492881219139" duration="238000" />
+      <workItem from="1495900437221" duration="2000" />
+      <workItem from="1495900461253" duration="87000" />
+      <workItem from="1495900560750" duration="609000" />
+      <workItem from="1495903642114" duration="768000" />
     </task>
     <task id="LOCAL-00001" summary="Command from Nav to Motors">
       <created>1484190183533</created>
@@ -591,22 +589,22 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="209363000" />
+    <option name="totallyTimeSpent" value="210829000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="65" y="24" width="1299" height="744" extended-state="4" />
+    <frame x="64" y="-11" width="1217" height="732" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47737068" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34321374" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34299517" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -778,7 +776,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../assign1" />
+    <entry file="file://$USER_HOME$/assign1" />
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -786,7 +784,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../../assign1.cpp" />
+    <entry file="file://$USER_HOME$/assign1.cpp" />
     <entry file="file://$PROJECT_DIR$/src/test/nav.cpp.cpp" />
     <entry file="file://$PROJECT_DIR$/src/mq.cpp">
       <provider selected="true" editor-type-id="text-editor">
@@ -807,13 +805,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="140">
           <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="10" selection-end-column="82" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/mq.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1380">
-          <caret line="69" column="43" lean-forward="false" selection-start-line="69" selection-start-column="43" selection-end-line="69" selection-end-column="43" />
         </state>
       </provider>
     </entry>
@@ -838,7 +829,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="80">
           <caret line="4" column="40" lean-forward="false" selection-start-line="4" selection-start-column="40" selection-end-line="4" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -893,7 +883,7 @@
     <entry file="file://$PROJECT_DIR$/src/processor.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1020">
-          <caret line="51" column="22" lean-forward="false" selection-start-line="51" selection-start-column="22" selection-end-line="51" selection-end-column="22" />
+          <caret line="51" column="20" lean-forward="false" selection-start-line="51" selection-start-column="20" selection-end-line="51" selection-end-column="20" />
           <folding />
         </state>
       </provider>
@@ -910,6 +900,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="920">
           <caret line="46" column="13" lean-forward="false" selection-start-line="46" selection-start-column="13" selection-end-line="46" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/mq.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="41" column="33" lean-forward="false" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="33" />
           <folding />
         </state>
       </provider>
