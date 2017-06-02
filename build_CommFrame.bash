@@ -4,6 +4,7 @@ sudo cp -r lib/rapidjson /usr/include
 
 g++ -std=c++11 -c -fPIC src/mq.cpp
 g++ -std=c++11 -c -fPIC src/processor.cpp
+g++ -std=c++11 -c -fPIC src/linearizer.cpp
 
 g++ -shared -Wl,-soname,libCommFrame.so.1 -o libCommFrame.so.1.0 *.o
 
