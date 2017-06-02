@@ -129,12 +129,12 @@ std::mutex start;
 
 
 #ifdef TEST
-cv::VideoCapture capture("/home/ubuntu/45_into_sun_polar.mp4");
+//cv::VideoCapture capture("/home/ubuntu/45_into_sun_polar.mp4");
 #endif
 
 int32_t RecordFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& recFrame, cv::gpu::GpuMat& depth)//sl::zed::Mat& depth)
 {
-#ifndef TEST
+//#ifndef TEST
     if(!ctxt->zedCamera->grab(sl::zed::SENSING_MODE::STANDARD, 1, 1, 1))
     {
         sl::zed::Mat imageView = ctxt->zedCamera->getView_gpu(sl::zed::VIEW_MODE::STEREO_SBS);
@@ -175,7 +175,7 @@ int32_t RecordFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& recFrame, cv::gpu::GpuMat& d
         
         return 1;
     }
-#endif
+/*#endif
 
 #ifdef TEST
 
@@ -196,7 +196,7 @@ int32_t RecordFrame(ZEDCtxt* ctxt, cv::gpu::GpuMat& recFrame, cv::gpu::GpuMat& d
     return 1;
 
 #endif
-
+*/
     return 0;
 }
 
@@ -282,7 +282,7 @@ cv::gpu::GpuMat HomomorphicFilter(cv::gpu::GpuMat& input)
     cv::gpu::split(input, imgParts);
 
 #ifdef TEST
-    printf("after split num channels = %d\n", imgParts.size());
+    //printf("after split num channels = %d\n", imgParts.size());
 #endif
 
     cv::gpu::GpuMat yChan = imgParts[0];
@@ -494,7 +494,7 @@ void vis_publisher(ZEDCtxt* ctxt) {
 //    start.unlock();
 
     // Turn this into a while(true) loop to keep posting messages
-    while (_iterations < 20) {
+    while (true) {
         std::cout << "I'm an iteration" << _iterations << std::endl;
         _iterations++;
         auto start = std::chrono::high_resolution_clock::now();
@@ -524,13 +524,14 @@ void vis_publisher(ZEDCtxt* ctxt) {
         depthMat.download(dlDepth);
 
 #ifdef TEST
-        cv::Mat outMat;
+        cv::Mat outMat(rows,cols, CV_8UC3);
+        outMat.setTo(cv::Scalar(0,0,0));
 #endif
 
         for(uint32_t i = 0; i < lines.size(); i++)
         {
             cv::Vec4i l = lines[i];
-            Line obLine;
+            Line* obLine = new Line();
 
             cv::Vec4i clean;
             uint32_t realX = 0;
@@ -552,7 +553,8 @@ void vis_publisher(ZEDCtxt* ctxt) {
 
 #ifdef TEST
             printf("clean 0 = %d   1 = %d    2 = %d   3 = %d\n", clean[0], clean[1], clean[2], clean[3]);
-            cv::line(outMat, cv::Point(clean[0], clean[1]), cv::Point(clean[2], clean[3]), cv::Scalar(150,150,150), 3, CV_AA);
+            //cv::line(outMat, cv::Point(clean[0], clean[1]), cv::Point(clean[2], clean[3]), cv::Scalar(255,255,255), 3, CV_AA);
+            cv::line(outMat, cv::Point(l[0], l[1]), cv::Point(l[2], l[3]), cv::Scalar(255,255,255), 3, CV_AA);
 #endif 
             theta1 = atan((rows-clean[1])/(clean[0]-halfCols));
             endTheta1 = atan((rows-clean[3])/(clean[2]-halfCols));
@@ -572,11 +574,11 @@ void vis_publisher(ZEDCtxt* ctxt) {
             beginActR = sin(cameraAngle) * (p1.val[0]/100);//.c1/100);
             endActR = sin(cameraAngle) * (p2.val[0]/100);//.c1/100);
 
-            obLine.beginY = beginActR * sin(theta1);
-            obLine.endY = endActR * sin(endTheta1);
+            obLine->beginY = beginActR * sin(theta1);
+            obLine->endY = endActR * sin(endTheta1);
 
-            obLine.beginX = beginActR * cos(theta1);
-            obLine.endX = endActR * cos(endTheta1);
+            obLine->beginX = beginActR * cos(theta1);
+            obLine->endX = endActR * cos(endTheta1);
 #endif
 
             obstLines->addLine(obLine);
