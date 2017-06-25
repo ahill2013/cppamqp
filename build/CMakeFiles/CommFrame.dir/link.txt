@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC   -shared -Wl,-soname,libCommFrame.so.1.0 -o libCommFrame.so.1.0 CMakeFiles/CommFrame.dir/src/mq.cpp.o CMakeFiles/CommFrame.dir/src/processor.cpp.o CMakeFiles/CommFrame.dir/src/linearizer.cpp.o 

@@ -1,3 +1,0 @@
-/home/armin1215/Desktop/documenting/cppamqp/build/CMakeFiles/edit_cache.dir
-/home/armin1215/Desktop/documenting/cppamqp/build/CMakeFiles/rebuild_cache.dir
-/home/armin1215/Desktop/documenting/cppamqp/build/CMakeFiles/CommFrame.dir
