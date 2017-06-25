@@ -1,11 +1,21 @@
-//
-// Created by armin1215 on 9/22/16.
-//
+/**
+ * Florida Tech's IGVC program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * Florida Tech's IGVC program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef AMQPTRIAL_MQ_H
 #define AMQPTRIAL_MQ_H
-#include <amqpcpp.h>
-#include <amqpcpp/libev.h>
+#include <amqpcpp.h>    // Copernica
+#include <amqpcpp/libev.h>  // Copernica
 #include <SimpleAmqpClient/SimpleAmqpClient.h>
 
 #include <thread>
@@ -24,6 +34,9 @@ void send_message(AmqpClient::Channel::ptr_t conn, std::string message, std::str
 void close_message(AmqpClient::Channel::ptr_t conn, std::string message,
                   std::string exchange, std::string key);
 
+/**
+ * @brief Potential message headers that should be known. Unicode strings for the sake of sending to Java programs.
+ */
 struct MessageHeaders {
 
     // UNICODE versions of headers
@@ -45,6 +58,9 @@ struct MessageHeaders {
 
 };
 
+/**
+ * @brief Possible exchange types, exchange names, and routing keys
+ */
 struct ExchKeys {
     std::string FANOUT = "fanout";
     std::string TOPIC = "topic";
@@ -86,6 +102,9 @@ struct ExchKeys {
 
 };
 
+/**
+ * @brief Wrapper around an AMQP-CPP connection bound to a LibEv event loop
+ */
 class MQSub {
 public:
     MQSub(struct ev_loop&, std::string& host, std::string& queue);

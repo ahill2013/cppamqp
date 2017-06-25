@@ -1,13 +1,26 @@
-//
-// Created by armin1215 on 1/14/17.
-//
+/**
+ * Florida Tech's IGVC program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3 as published by
+ * the Free Software Foundation.
+ *
+ * Florida Tech's IGVC program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "../include/processor.h"
 #include "iostream"
 
 using namespace rapidjson;
 
-// Simple writer
+/**
+ * @brief Serialize a GPS Message into a JSON object
+ * @param writer a RapidJSON writer
+ */
 void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.StartObject();
     writer.String("lat");
@@ -31,6 +44,10 @@ void GPSMessage::Serialize(Writer<StringBuffer> &writer) const {
     writer.EndObject();
 }
 
+/**
+ * Deserialize a RapidJSON document into a GPSMessage
+ * @param d document to deserialize
+ */
 GPSMessage::GPSMessage(Document &d) {
 //    if (preprocessed) {
         std::cout << "Preprocessed" << std::endl;
@@ -48,6 +65,15 @@ GPSMessage::GPSMessage(Document &d) {
 //    }
 }
 
+/**
+ * Create a new GPSMessage based off the provided inputs
+ * @param lat latitude
+ * @param lon longitude
+ * @param linvel linear velocity
+ * @param angvel angular velocity
+ * @param time time in milliseconds since gps epoch (different from unix epoch)
+ * @param heading heading from north
+ */
 GPSMessage::GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t time, double heading) {
     this->lat = lat;
     this->lon = lon;
@@ -69,7 +95,12 @@ Interval::~Interval() = default;
 
 ////////////////////////////////////////////////////////////////////////
 
-
+/**
+ * List of lines detected by camera
+ * @param lat latitude at time lines were found
+ * @param lon longitude at time lines were found
+ * @param time time in milliseconds since unix epoch
+ */
 Lines::Lines(double lat, double lon, uint64_t time) {
     this->lat = lat;
     this->lon = lon;
@@ -77,15 +108,24 @@ Lines::Lines(double lat, double lon, uint64_t time) {
     lines = new std::vector<Line*>();
 }
 
+/**
+ * @brief Add a line to the list of lines found
+ * @param line pointer to the line
+ */
 void Lines::addLine(Line* line) {
     lines->push_back(line);
 }
 
+/**
+ * @brief Serialize Lines object into JSON using the provided RapidJSON writer
+ * @param writer
+ */
 void Lines::Serialize(Writer<StringBuffer> &writer) const {
     Document jsonDoc;
     jsonDoc.SetObject();
     Document::AllocatorType& allocator = jsonDoc.GetAllocator();
 
+    // How you create an array of objects in RapidJSON
     Value linesArray(kArrayType);
 
     Value latValue;
@@ -97,6 +137,7 @@ void Lines::Serialize(Writer<StringBuffer> &writer) const {
     Value timeValue;
     timeValue.SetUint64(time);
 
+    // Add all lines to array object
     for (Line* line : *lines) {
         Value lineVal;
         lineVal.SetObject();
@@ -124,6 +165,12 @@ Lines::~Lines() {
 }
 
 ///////////////////////////////////////////////////////////////////////////
+/**
+ * @brief List of circular obstacles found by the lidar
+ * @param lat latitude (not in use)
+ * @param lon longitude (not in use)
+ * @param time time in milliseconds since unix epoch
+ */
 Obstacles::Obstacles(double lat, double lon, uint64_t time) {
     this->lat = lat;
     this->lon = lon;
@@ -131,6 +178,10 @@ Obstacles::Obstacles(double lat, double lon, uint64_t time) {
     obstacles = new std::vector<Obstacle>();
 }
 
+/**
+ * @brief Serialize a list of obstacles using the provided writer
+ * @param writer RapidJSON writer
+ */
 void Obstacles::Serialize(Writer<StringBuffer> &writer) const {
     Document jsonDoc;
     jsonDoc.SetObject();
@@ -178,6 +229,10 @@ Obstacles::~Obstacles() {
     delete obstacles;
 }
 //////////////////////////////////////////////////////////////////////////
+/**
+ * @brief Deserialize command for motor control to execute
+ * @param val RapidJSON Value
+ */
 Command::Command(const Value& val) {
     startang = val["startang"].GetDouble();
     linvel = val["linvel"].GetDouble();
@@ -188,6 +243,15 @@ Command::Command(const Value& val) {
 
 }
 
+/**
+ * @brief Used for testing create a command to execute
+ * @param linvel
+ * @param angvel
+ * @param startang heading at start of command
+ * @param endlat
+ * @param endlon
+ * @param duration
+ */
 Command::Command(double linvel, double angvel, double startang, double endlat, double endlon, double duration) {
     this->linvel = linvel;
     this->angvel = angvel;
@@ -199,6 +263,10 @@ Command::Command(double linvel, double angvel, double startang, double endlat, d
 
 Command::~Command() = default;
 
+/**
+ * Deserialize list of commands for motor control to execute
+ * @param d
+ */
 Commands::Commands(Document &d) {
 
     Value& lat = d["startLat"];
@@ -217,11 +285,18 @@ Commands::Commands(Document &d) {
     }
 }
 
-
+/**
+ * Check if any commands have been given
+ * @return
+ */
 bool Commands::isEmpty() {
     return commands->empty();
 }
 
+/**
+ * Get a command to execute if there is one otherwise return null
+ * @return
+ */
 Command* Commands::remove() {
 
     if (commands->size() == 0) {
@@ -239,12 +314,23 @@ Commands::~Commands() {
 
 
 /////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief Status message of a component
+ * @param comp name of the component (motor control, lidar, gps, etc.)
+ * @param status status (running, crashed, waiting to start)
+ * @param logmessage string message with whatever you want
+ */
 Status::Status(std::string comp, bool status, std::string logmessage) {
     unit = comp;
     running = status;
     message = logmessage;
 }
 
+/**
+ * @brief Deserialize JSONDocument into Status message
+ * @param d
+ */
 Status::Status(Document& d) {
     Value& u = d["unit"];
     Value& run = d["running"];
@@ -255,6 +341,10 @@ Status::Status(Document& d) {
     message = mess.GetString();
 }
 
+/**
+ * Serialize message into RapidJSON document
+ * @param writer
+ */
 void Status::Serialize(Writer<StringBuffer> &writer) const {
     Document jsonDoc;
     jsonDoc.SetObject();
@@ -278,12 +368,14 @@ Status::~Status() = default;
 
 
 /////////////////////////////////////////////////////////////////////////
+// Encoders information if we ever want to broadcast it
 MotorBroadcast::MotorBroadcast(uint64_t t) {
     time = t;
     left = new std::vector<double>();
     right = new std::vector<double>();
 }
 
+// Serialize encoders information
 MotorBroadcast::MotorBroadcast(Document& d) {
 
     left = new std::vector<double>();
@@ -306,10 +398,12 @@ MotorBroadcast::MotorBroadcast(Document& d) {
     }
 }
 
+// Add encoder value to left
 void MotorBroadcast::addLeft(double encoder_val) {
     left->push_back(encoder_val);
 }
 
+// Add encoder value to right
 void MotorBroadcast::addRight(double encoder_val) {
     right->push_back(encoder_val);
 }

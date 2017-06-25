@@ -14,20 +14,29 @@
 #include <stdint.h>
 //using namespace rapidjson;
 
+/**
+ * @brief Details of information gathered by an ins and gps to be broadcast to other components
+ */
 class GPSMessage {
 public:
-    double lat;
-    double lon;
-    double linvel;
-    double linacc;
-    double angvel;
-    double angacc;
-    uint64_t time;
+    double lat; // Latitude
+    double lon; // Longitude
+    double linvel;  // Linear velocity
+    double linacc;  // Linear acceleration (not sent currently)
+    double angvel;  // Angular velocity
+    double angacc;  // Angular acceleration (not in use)
+    uint64_t time;  // Time in milliseconds since gps epoch
     bool ins;
-    double heading;
+    double heading; // Heading of the robot
 
+    /**
+     * @brief Method to serialize GPSMessage
+     */
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const;
 
+    /**
+     * @brief GPSMessage constructor fill in with information that should be sent
+     */
     GPSMessage(double lat, double lon, double linvel, double angvel, uint64_t numTime, double heading);
     GPSMessage(rapidjson::Document& d);
     ~GPSMessage();
@@ -41,6 +50,9 @@ public:
     ~Interval();
 };
 
+/**
+ * @brief Single obstacle with an x, y coordinate and a radius
+ */
 struct Obstacle {
     double x;
     double y;
@@ -50,6 +62,9 @@ struct Obstacle {
     int type;
 };
 
+/**
+ * @brief Single line with a beginning and ending coordinate
+ */
 struct Line {
     double beginX;
     double beginY;
@@ -57,6 +72,9 @@ struct Line {
     double endY;
 };
 
+/**
+ * @brief List of circular obstacles
+ */
 class Obstacles {
 public:
     double lat;
@@ -72,7 +90,9 @@ public:
     ~Obstacles();
 };
 
-
+/**
+ * @brief List of lines detected by the ZED camera
+ */
 class Lines {
 public:
     double lat;
@@ -88,6 +108,9 @@ public:
     ~Lines();
 };
 
+/**
+ * @brief Single command to be sent
+ */
 class Command {
 public:
     double startang;
@@ -104,6 +127,9 @@ public:
     ~Command();
 };
 
+/**
+ * @brief List of commands to be executed by motor control
+ */
 class Commands {
 public:
     double startLat;
@@ -154,10 +180,16 @@ private:
 };
 
 
-
-// Put all message types (as structs) in here, include ways to send and parse them)
+/**
+ * @brief namespace for all encode and decode methods for serializing to JSON and deserializing from JSON
+ */
 namespace Processor {
 
+    /**
+     * @brief Encode a gps message as json
+     * @param to_encode GPSMessage to encode
+     * @return RapidJSON document as string
+     */
     static std::string encode_gps(GPSMessage &to_encode) {
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -166,6 +198,11 @@ namespace Processor {
         return buffer.GetString();
     }
 
+    /**
+     * Decode a gps message from a string
+     * @param to_decode RapidJSON document as string
+     * @return decoded GPSMessage
+     */
     static GPSMessage *decode_gps(std::string to_decode) {
         rapidjson::Document d;
         d.Parse(to_decode.c_str());
@@ -178,6 +215,11 @@ namespace Processor {
         return new Interval(d);
     }
 
+    /**
+     * Encode list of lines to JSON string
+     * @param to_encode list of lines to encode
+     * @return RapidJSON document as string
+     */
     static std::string encode_lines(Lines &to_encode) {
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -186,6 +228,11 @@ namespace Processor {
         return buffer.GetString();
     }
 
+    /**
+     * Encode list of obstacles as JSON string
+     * @param to_encode list of obstacles to encode
+     * @return RapidJSON document as string
+     */
     static std::string encode_obstacles(Obstacles &to_encode) {
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
@@ -194,6 +241,11 @@ namespace Processor {
         return buffer.GetString();
     }
 
+    /**
+     * Decode a JSON string into a list of commands
+     * @param to_decode json string to decode
+     * @return Commands object
+     */
     static Commands *decode_commands(std::string to_decode) {
         rapidjson::Document d;
         d.Parse(to_decode.c_str());
@@ -228,7 +280,5 @@ namespace Processor {
         return new MotorBroadcast(d);
     }
 };
-
-
 
 #endif //CPPFRAME_PROCESSOR_H

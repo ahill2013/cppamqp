@@ -46,14 +46,19 @@ Install AMQP-CPP by downloading it from GitHub and running their install command
 ([download](https://github.com/CopernicaMarketingSoftware/AMQP-CPP))
 
 #Usage
+Most of the programs can be called by just running the executable, but you may add
+TClap capabilities (argument parsing) to make the programs more flexible for run scripts.
 bin/mc --ip "amqp://192.168.11.2" -m -n
 
 #### Build the library
+
 Run
 ```bash
 bash build_CommFrame.bash
 ```
 This creates a shared object library, puts it in /usr/lib and links that library appropriately.
+
+The CMakeLists.txt file is so that CLion can process all of the files in the project letting you take advantage of CLion's capabilities.
 
 #### Build the components
 Read through the makefile and determine which components you want to build then build them.

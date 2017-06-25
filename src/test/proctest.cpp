@@ -2,8 +2,8 @@
 // Created by armin1215 on 12/4/16.
 //
 
-#include "../../include/mq.h"
-#include "../../include/processor.h"
+#include <myamqp/mq.h>
+#include <myamqp/processor.h>
 #include <stdio.h>
 
 using namespace rapidjson;
@@ -99,8 +99,8 @@ int main() {
     ob2.y = 10.0;
     ob2.type = 3;
 
-    lines->addLine(ex);
-    lines->addLine(ex2);
+    lines->addLine(&ex);
+    lines->addLine(&ex2);
     obstacles->addObstacle(ob);
     obstacles->addObstacle(ob2);
 
